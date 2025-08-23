@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Cadastro Pessoal</title>
+    <style>
+      * {
+      }
+      body {
+        background-image: url(./images/unisc_fundo.jpg);
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 80vh;
+      }
+
+      .container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        width: 90vw;
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .radio-group {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .radio-group label {
+        font-weight: bold;
+        border: 1px solid #c0cfff;
+        border-radius: 8px;
+        cursor: pointer;
+        background: #f9f9ff;
+      }
+
+      .radio-group input {
+        margin-right: 5px;
+      }
+
+      .form {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 10px;
+        align-items: start;
+      }
+
+      .form-left {
+        border: 1px solid #c0cfff;
+        border-radius: 10px;
+        padding: 10px;
+      }
+
+      .form-left label {
+        display: block;
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .form-left input {
+        width: 95%;
+        border: 1px solid #aaa;
+        border-radius: 5px;
+      }
+
+      .photo-upload {
+        border: 1px solid #c0cfff;
+        border-radius: 10px;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .photo-upload img {
+        width: 100px;
+        height: 100px;
+        border-radius: 10px;
+        border: 2px dashed #aaa;
+        object-fit: cover;
+        cursor: pointer;
+      }
+
+      .photo-upload input {
+        display: none;
+      }
+
+      .photo-upload p {
+        margin-top: 10px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>CADASTRO PESSOAL</h2>
+
+      <div class="radio-group">
+        <label><input type="radio" name="tipo" value="aluno" />Aluno</label>
+        <label
+          ><input type="radio" name="tipo" value="professor" />Professor</label
+        >
+        <label
+          ><input
+            type="radio"
+            name="tipo"
+            value="coordenador"
+          />Coordenador</label
+        >
+      </div>
+
+      <div class="form">
+        <div class="form-left">
+          <label>Data de Nascimento:</label>
+          <input type="date" />
+
+          <label>Contato:</label>
+          <input type="text" />
+
+          <label>CPF:</label>
+          <input type="text" />
+
+          <label>RG:</label>
+          <input type="text" />
+
+          <label>Cidade:</label>
+          <input type="text" />
+
+          <label>Endereço:</label>
+          <input type="text" />
+
+          <label>Estado Civil:</label>
+          <input type="text" />
+
+          <label>Sexo:</label>
+          <input type="text" />
+
+          <label>Nome do pai:</label>
+          <input type="text" />
+
+          <label>Nome da mãe:</label>
+          <input type="text" />
+        </div>
+
+        <div class="photo-upload">
+          <label for="file-input">
+            <img
+              id="preview"
+              src="https://cdn-icons-png.flaticon.com/512/685/685655.png"
+              alt="Foto"
+            />
+          </label>
+          <input type="file" id="file-input" accept="image/*" />
+          <p>Insira sua foto</p>
+        </div>
+        <div>
+          <button>CADASTRAR</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const fileInput = document.getElementById("file-input");
+      const preview = document.getElementById("preview");
+
+      fileInput.addEventListener("change", function () {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            preview.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    </script>
+  </body>
+</html>
