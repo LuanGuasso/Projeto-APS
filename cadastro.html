@@ -4,8 +4,6 @@
     <meta charset="UTF-8" />
     <title>Cadastro Pessoal</title>
     <style>
-      * {
-      }
       body {
         background-image: url(./images/unisc_fundo.jpg);
         font-family: Arial, sans-serif;
@@ -93,6 +91,26 @@
         margin-top: 10px;
         font-size: 14px;
       }
+      .btnCadastrar {
+        display: flex;
+        justify-self: right;
+        margin-bottom: 2vh;
+        margin-right: 3vh;
+        background-color: #fff;
+        color: #000;
+        font-size: 1.2rem;
+        border: 0px solid #000;
+        border-radius: 12px;
+        cursor: pointer;
+        box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .btnCadastrar:hover {
+        color: #fff;
+        background-color: #002979;
+        transition: 0.8s;
+        box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.2);
+      }
     </style>
   </head>
   <body>
@@ -157,9 +175,9 @@
           <input type="file" id="file-input" accept="image/*" />
           <p>Insira sua foto</p>
         </div>
-        <div>
-          <button>CADASTRAR</button>
-        </div>
+      </div>
+      <div>
+        <button class="btnCadastrar">CADASTRAR</button>
       </div>
     </div>
 
