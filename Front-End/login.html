@@ -186,14 +186,42 @@
         <button class="btn1" onclick="window.location.href='cadastro.html'">
           CADASTRAR
         </button>
-        <button
-          class="btn2"
-          onclick="window.location.href='painel_pessoal.html'"
-        >
-          ENTRAR
-        </button>
+        <button class="btn2" onclick="fazerLogin()">ENTRAR</button>
       </div>
+        <script>
+          async function fazerLogin() {
+            const usuario = document.querySelector(".user input").value;
+            const senha = document.querySelector(".senha input").value;
 
+            if (!usuario || !senha) {
+              alert("Por favor, preencha usuário e senha.");
+              return;
+            }
+
+            try {
+              const response = await fetch("http://localhost:3000/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nome: usuario, senha: senha })
+              });
+
+              const result = await response.json();
+
+              if (response.ok) {
+                if (result.usuario.tipo === "aluno") {
+                  window.location.href = "painel_pessoal.html";
+                } else {
+                  alert("Apenas alunos podem acessar essa área.");
+                }
+              } else {
+                alert(result.error);
+              }
+            } catch (error) {
+              console.error("Erro:", error);
+              alert("Erro de conexão com o servidor.");
+            }
+          }
+        </script>
       <a href=""><p class="escsenha">ESQUECI MINHA SENHA</p></a>
     </div>
   </body>
