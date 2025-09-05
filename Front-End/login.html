@@ -209,6 +209,7 @@
 
               if (response.ok) {
                 if (result.usuario.tipo === "aluno") {
+                  localStorage.setItem("usuarioLogado", JSON.stringify(result.usuario));
                   window.location.href = "painel_pessoal.html";
                 } else {
                   alert("Apenas alunos podem acessar essa área.");
