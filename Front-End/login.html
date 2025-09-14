@@ -20,7 +20,7 @@
       }
 
       body {
-        background-image: url(./images/unisc_fundo.jpg);
+        background-image: url(../images/unisc_fundo.jpg);
         background-size: cover;
         margin: 0;
         height: 100vh;
@@ -188,41 +188,44 @@
         </button>
         <button class="btn2" onclick="fazerLogin()">ENTRAR</button>
       </div>
-        <script>
-          async function fazerLogin() {
-            const usuario = document.querySelector(".user input").value;
-            const senha = document.querySelector(".senha input").value;
+      <script>
+        async function fazerLogin() {
+          const usuario = document.querySelector(".user input").value;
+          const senha = document.querySelector(".senha input").value;
 
-            if (!usuario || !senha) {
-              alert("Por favor, preencha usuário e senha.");
-              return;
-            }
-
-            try {
-              const response = await fetch("http://localhost:3000/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ nome: usuario, senha: senha })
-              });
-
-              const result = await response.json();
-
-              if (response.ok) {
-                if (result.usuario.tipo === "aluno") {
-                  localStorage.setItem("usuarioLogado", JSON.stringify(result.usuario));
-                  window.location.href = "painel_pessoal.html";
-                } else {
-                  alert("Apenas alunos podem acessar essa área.");
-                }
-              } else {
-                alert(result.error);
-              }
-            } catch (error) {
-              console.error("Erro:", error);
-              alert("Erro de conexão com o servidor.");
-            }
+          if (!usuario || !senha) {
+            alert("Por favor, preencha usuário e senha.");
+            return;
           }
-        </script>
+
+          try {
+            const response = await fetch("http://localhost:3000/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ nome: usuario, senha: senha }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+              if (result.usuario.tipo === "aluno") {
+                localStorage.setItem(
+                  "usuarioLogado",
+                  JSON.stringify(result.usuario)
+                );
+                window.location.href = "painel_pessoal.html";
+              } else {
+                alert("Apenas alunos podem acessar essa área.");
+              }
+            } else {
+              alert(result.error);
+            }
+          } catch (error) {
+            console.error("Erro:", error);
+            alert("Erro de conexão com o servidor.");
+          }
+        }
+      </script>
       <a href=""><p class="escsenha">ESQUECI MINHA SENHA</p></a>
     </div>
   </body>

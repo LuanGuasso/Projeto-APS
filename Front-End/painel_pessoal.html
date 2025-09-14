@@ -8,7 +8,7 @@
       @import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
 
       body {
-        background-image: url(./images/unisc_fundo.jpg);
+        background-image: url(../images/unisc_fundo.jpg);
         background-size: cover;
         font-family: "Roboto Condensed", sans-serif;
         font-weight: 600;
@@ -100,7 +100,6 @@
         />
 
         <h2 id="nomeHeader">Nome do Aluno</h2>
-
       </div>
 
       <div class="tabs">
@@ -111,21 +110,23 @@
       </div>
 
       <div id="dados" class="tab-content active">
-  <div class="dados-lista">
-    <p><strong>Nome:</strong> <span id="nomeAluno"></span></p>
-    <p><strong>Data de Nascimento:</strong> <span id="dataNascimento"></span></p>
-    <p><strong>Contato:</strong> <span id="contato"></span></p>
-    <p><strong>CPF:</strong> <span id="cpf"></span></p>
-    <p><strong>RG:</strong> <span id="rg"></span></p>
-    <p><strong>Cidade:</strong> <span id="cidade"></span></p>
-    <p><strong>Endereço:</strong> <span id="endereco"></span></p>
-    <p><strong>Estado Civil:</strong> <span id="estadoCivil"></span></p>
-    <p><strong>Sexo:</strong> <span id="sexo"></span></p>
-    <p><strong>Nome do Pai:</strong> <span id="nomePai"></span></p>
-    <p><strong>Nome da Mãe:</strong> <span id="nomeMae"></span></p>
-  </div>
-</div>
-
+        <div class="dados-lista">
+          <p><strong>Nome:</strong> <span id="nomeAluno"></span></p>
+          <p>
+            <strong>Data de Nascimento:</strong>
+            <span id="dataNascimento"></span>
+          </p>
+          <p><strong>Contato:</strong> <span id="contato"></span></p>
+          <p><strong>CPF:</strong> <span id="cpf"></span></p>
+          <p><strong>RG:</strong> <span id="rg"></span></p>
+          <p><strong>Cidade:</strong> <span id="cidade"></span></p>
+          <p><strong>Endereço:</strong> <span id="endereco"></span></p>
+          <p><strong>Estado Civil:</strong> <span id="estadoCivil"></span></p>
+          <p><strong>Sexo:</strong> <span id="sexo"></span></p>
+          <p><strong>Nome do Pai:</strong> <span id="nomePai"></span></p>
+          <p><strong>Nome da Mãe:</strong> <span id="nomeMae"></span></p>
+        </div>
+      </div>
 
       <div id="notas" class="tab-content">
         <p>As notas aparecerão aqui...</p>
@@ -180,13 +181,15 @@
 
         document.getElementById("nomeHeader").textContent = usuario.nome;
         document.getElementById("nomeAluno").textContent = usuario.nome;
-        document.getElementById("dataNascimento").textContent = usuario.data_nascimento;
+        document.getElementById("dataNascimento").textContent =
+          usuario.data_nascimento;
         document.getElementById("contato").textContent = usuario.contato;
         document.getElementById("cpf").textContent = usuario.cpf;
         document.getElementById("rg").textContent = usuario.rg;
         document.getElementById("cidade").textContent = usuario.cidade;
         document.getElementById("endereco").textContent = usuario.endereco;
-        document.getElementById("estadoCivil").textContent = usuario.estado_civil;
+        document.getElementById("estadoCivil").textContent =
+          usuario.estado_civil;
         document.getElementById("sexo").textContent = usuario.sexo;
         document.getElementById("nomePai").textContent = usuario.nome_pai;
         document.getElementById("nomeMae").textContent = usuario.nome_mae;

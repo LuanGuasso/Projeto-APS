@@ -8,7 +8,7 @@
       body {
         font-family: "Roboto Condensed", sans-serif;
         font-weight: 900;
-        background-image: url(./images/unisc_fundo.jpg);
+        background-image: url(../images/unisc_fundo.jpg);
         font-family: Arial, sans-serif;
         display: flex;
         justify-content: center;
@@ -187,11 +187,15 @@
         </div>
       </div>
       <div>
-        <button class="btnCadastrar" onclick="cadastrarUsuario()">CADASTRAR</button>
+        <button class="btnCadastrar" onclick="cadastrarUsuario()">
+          CADASTRAR
+        </button>
 
         <script>
           async function cadastrarUsuario() {
-            const tipoRadio = document.querySelector("input[name='tipo']:checked");
+            const tipoRadio = document.querySelector(
+              "input[name='tipo']:checked"
+            );
             if (!tipoRadio) {
               alert("Por favor, selecione o tipo de usuário.");
               return;
@@ -215,7 +219,7 @@
 
             for (const key in dados) {
               if (dados[key] === "") {
-                alert(`Por favor, preencha o campo: ${key.replace(/_/g, ' ')}`);
+                alert(`Por favor, preencha o campo: ${key.replace(/_/g, " ")}`);
                 return;
               }
             }
@@ -230,12 +234,14 @@
               const result = await response.json();
               if (response.status === 200) {
                 alert(result.message);
-                window.location.href = "login.html"; 
+                window.location.href = "login.html";
               } else {
                 alert(result.error);
               }
             } catch (error) {
-              alert("Erro de conexão com o servidor. Verifique se o backend está rodando na porta 3000.");
+              alert(
+                "Erro de conexão com o servidor. Verifique se o backend está rodando na porta 3000."
+              );
               console.error("Erro:", error);
             }
           }
