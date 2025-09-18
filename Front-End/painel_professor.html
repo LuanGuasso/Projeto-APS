@@ -510,8 +510,52 @@
             } para o usuário ${usuarioLogado.nome}.`
           );
         });
+      
 
-      function cadastrarAluno() {
+
+
+
+      async function cadastrarAluno() {
+        const nome = document.getElementById("nomeAlunoMatriculado").value;
+        const matricula = document.getElementById("matriculaAluno").value;
+
+        //PEDE Uma senha ou gera uma pra evitar bugs e deixar mais simpels tmb
+        const senha = prompt("Digite uma senha para o novo aluno:", "123456");
+
+        if (!nome || !matricula || !senha) {
+          alert(
+            "Por favor, preencha o nome, a matrícula e a senha do aluno."
+          );
+          return;
+        }
+
+        try {
+          const response = await fetch("http://localhost:3000/api/alunos", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nome, matricula, senha }),
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            alert(result.message);
+            document.getElementById("nomeAlunoMatriculado").value = "";
+            document.getElementById("matriculaAluno").value = "";
+            loadAlunosMatriculados(); // Recarrega a lista de alunos
+            loadAlunosForSelect(); // Recarrega os selects
+          } else {
+            alert(`Erro: ${result.error}`);
+          }
+        } catch (error) {
+          console.error("Erro ao cadastrar aluno:", error);
+          alert("Não foi possível conectar ao servidor.");
+        }
+      }
+
+
+      //DEIXEI UMA COPIA DA FUNÇÃO ORIGINAL
+      /*function cadastrarAluno() {
         const nome = document.getElementById("nomeAlunoMatriculado").value;
         const matricula = document.getElementById("matriculaAluno").value;
         if (nome && matricula) {
@@ -523,7 +567,7 @@
         } else {
           alert("Por favor, preencha o nome e a matrícula do aluno.");
         }
-      }
+      }*/
 
       function definirOrientador() {
         const alunoId = document.getElementById("alunoSelecionado").value;
@@ -540,7 +584,43 @@
         }
       }
 
-      function cadastrarProfessor() {
+
+      async function cadastrarProfessor() {
+        const nome = document.getElementById("nomeProfessor").value;
+        const disciplina = document.getElementById("disciplinaProfessor").value;
+        const senha = prompt("Digite uma senha para o novo professor:", "123456");
+
+
+        if (!nome || !disciplina || !senha) {
+          alert("Por favor, preencha o nome, a disciplina e a senha do professor.");
+          return;
+        }
+
+        try {
+          const response = await fetch("http://localhost:3000/api/professores", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nome, disciplina, senha }),
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            alert(result.message);
+            document.getElementById("nomeProfessor").value = "";
+            document.getElementById("disciplinaProfessor").value = "";
+            loadProfessores(); // Recarrega a lista de professores
+            loadProfessoresForSelect(); // Recarrega os selects
+          } else {
+            alert(`Erro: ${result.error}`);
+          }
+        } catch (error) {
+          console.error("Erro ao cadastrar professor:", error);
+          alert("Não foi possível conectar ao servidor.");
+        }
+      }
+
+      /*function cadastrarProfessor() {
         const nome = document.getElementById("nomeProfessor").value;
         const disciplina = document.getElementById("disciplinaProfessor").value;
         if (nome && disciplina) {
@@ -552,7 +632,7 @@
         } else {
           alert("Por favor, preencha o nome e a disciplina do professor.");
         }
-      }
+      }*/
 
       function lancarNotas() {
         const alunoId = document.getElementById("alunoParaNota").value;
@@ -643,6 +723,33 @@
         generateNotasPorCriterioInputs();
       }
 
+
+      async function loadAlunosMatriculados() {
+        const listaAlunosEl = document.getElementById("listaAlunosMatriculados");
+        listaAlunosEl.innerHTML = "<li>Carregando...</li>";
+
+        try {
+          const response = await fetch("http://localhost:3000/api/alunos");
+          const alunos = await response.json();
+
+          listaAlunosEl.innerHTML = ""; // Limpa a lista
+          if (alunos.length === 0) {
+            listaAlunosEl.innerHTML = "<li>Nenhum aluno cadastrado.</li>";
+            return;
+          }
+
+          alunos.forEach((aluno) => {
+            const li = document.createElement("li");
+            // Ajuste para usar 'cpf' como matrícula, conforme definido no backend
+            li.textContent = `${aluno.nome} (Matrícula: ${aluno.cpf})`;
+            listaAlunosEl.appendChild(li);
+          });
+        } catch (error) {
+          console.error("Erro ao buscar alunos:", error);
+          listaAlunosEl.innerHTML = "<li>Erro ao carregar alunos.</li>";
+        }
+      }
+      /*
       function loadAlunosMatriculados() {
         const listaAlunosEl = document.getElementById(
           "listaAlunosMatriculados"
@@ -659,8 +766,34 @@
           li.textContent = `${aluno.nome} (Matrícula: ${aluno.matricula})`;
           listaAlunosEl.appendChild(li);
         });
-      }
+      }*/
+      
+      async function loadAlunosForSelect() {
+        const selects = [
+          document.getElementById("alunoSelecionado"),
+          document.getElementById("alunoParaNota"),
+          document.getElementById("alunoParaBanca"),
+          document.getElementById("alunoReuniao"),
+        ];
 
+        try {
+          const response = await fetch("http://localhost:3000/api/alunos");
+          const alunos = await response.json();
+
+          selects.forEach(select => {
+            select.innerHTML = '<option value="">Selecione um aluno</option>'; // Limpa e adiciona a opção padrão
+            alunos.forEach((aluno) => {
+              const option = document.createElement("option");
+              option.value = aluno.id;
+              option.textContent = aluno.nome;
+              select.appendChild(option);
+            });
+          });
+        } catch (error) {
+          console.error("Erro ao buscar alunos para os selects:", error);
+        }
+      }
+      /*
       function loadAlunosForSelect() {
         const selectAluno = document.getElementById("alunoSelecionado");
         const selectAlunoNota = document.getElementById("alunoParaNota");
@@ -683,7 +816,34 @@
           selectAlunoReuniao.appendChild(option.cloneNode(true));
         });
       }
+        */
 
+      async function loadProfessores() {
+        const listaProfessoresEl = document.getElementById("listaProfessores");
+        listaProfessoresEl.innerHTML = "<li>Carregando...</li>";
+
+        try {
+          const response = await fetch("http://localhost:3000/api/professores");
+          const professores = await response.json();
+          
+          listaProfessoresEl.innerHTML = ""; // Limpa a lista
+          if (professores.length === 0) {
+              listaProfessoresEl.innerHTML = "<li>Nenhum professor cadastrado.</li>";
+              return;
+          }
+
+          professores.forEach((prof) => {
+            const li = document.createElement("li");
+            // Adapte caso adicione o campo 'disciplina' ao retorno da API
+            li.textContent = `${prof.nome}`;
+            listaProfessoresEl.appendChild(li);
+          });
+        } catch (error) {
+            console.error("Erro ao buscar professores:", error);
+            listaProfessoresEl.innerHTML = "<li>Erro ao carregar professores.</li>";
+        }
+      }
+      /*
       function loadProfessores() {
         const listaProfessoresEl = document.getElementById("listaProfessores");
         listaProfessoresEl.innerHTML = "";
@@ -699,7 +859,33 @@
           listaProfessoresEl.appendChild(li);
         });
       }
+        */
 
+      async function loadProfessoresForSelect() {
+        const selects = [
+          document.getElementById("orientadorSelecionado"),
+          document.getElementById("professorBanca1"),
+          document.getElementById("professorBanca2"),
+        ];
+
+        try {
+            const response = await fetch("http://localhost:3000/api/professores");
+            const professores = await response.json();
+
+            selects.forEach(select => {
+                select.innerHTML = '<option value="">Selecione um professor</option>'; // Limpa e adiciona a opção padrão
+                professores.forEach((prof) => {
+                    const option = document.createElement("option");
+                    option.value = prof.id;
+                    option.textContent = prof.nome;
+                    select.appendChild(option);
+                });
+            });
+        } catch (error) {
+            console.error("Erro ao buscar professores para os selects:", error);
+        }
+      }
+      /*
       function loadProfessoresForSelect() {
         const selectOrientador = document.getElementById(
           "orientadorSelecionado"
@@ -722,6 +908,7 @@
           selectBanca2.appendChild(option.cloneNode(true));
         });
       }
+        */
 
       function generateNotasPorCriterioInputs() {
         const container = document.getElementById("notasPorCriterio");

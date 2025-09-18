@@ -108,6 +108,111 @@ app.post("/login", (req, res) => {
   );
 });
 
+
+// Rota para listar todos os alunos
+app.get("/api/alunos", (req, res) => {
+  db.query(
+    "SELECT id, nome, contato, cpf, cidade FROM usuarios WHERE tipo = 'aluno'",
+    (err, results) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Erro ao buscar alunos" });
+      }
+      res.json(results);
+    }
+  );
+});
+
+// Rota para listar todos os professores
+app.get("/api/professores", (req, res) => {
+  db.query(
+    "SELECT id, nome, contato FROM usuarios WHERE tipo IN ('professor', 'coordenador')",
+    (err, results) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Erro ao buscar professores" });
+      }
+      res.json(results);
+    }
+  );
+});
+
+// Rota para cadastrar um novo aluno (pelo painel do professor/coordenador)
+app.post("/api/alunos", async (req, res) => {
+  const { nome, matricula, senha } = req.body;
+
+  if (!nome || !matricula || !senha) {
+    return res
+      .status(400)
+      .json({ error: "Nome, matrícula e senha são obrigatórios." });
+  }
+
+  try {
+    const hashSenha = await bcrypt.hash(senha, 10);
+    // SQL inclui todos os campos com valores padrão
+    const sql = `INSERT INTO usuarios 
+      (tipo, nome, data_nascimento, contato, cpf, rg, cidade, endereco, estado_civil, sexo, nome_pai, nome_mae, senha) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+    // Usando 'matricula' no campo 'cpf' e strings vazias para os demais
+    const values = [
+      'aluno', nome, '1900-01-01', '', matricula, '', '', '', '', '', '', '', hashSenha
+    ];
+
+    db.query(sql, values, (err) => {
+      if (err) {
+        console.error("Erro no banco de dados:", err);
+        if (err.code === "ER_DUP_ENTRY") {
+          return res.status(409).json({ error: "Aluno com esta matrícula já cadastrado." });
+        }
+        return res.status(500).json({ error: "Erro ao cadastrar aluno." });
+      }
+      res.status(201).json({ message: "Aluno cadastrado com sucesso!" });
+    });
+  } catch (error) {
+    console.error("Erro de servidor:", error);
+    res.status(500).json({ error: "Erro interno do servidor." });
+  }
+});
+
+// Rota para cadastrar um novo professor (pelo painel do coordenador)
+app.post("/api/professores", async (req, res) => {
+  const { nome, disciplina, senha } = req.body; 
+
+  if (!nome || !disciplina || !senha) {
+    return res
+      .status(400)
+      .json({ error: "Nome, disciplina e senha são obrigatórios." });
+  }
+
+  try {
+    const hashSenha = await bcrypt.hash(senha, 10);
+    // SQL inclui todos os campos com valores padrão
+    const sql = `INSERT INTO usuarios 
+      (tipo, nome, data_nascimento, contato, cpf, rg, cidade, endereco, estado_civil, sexo, nome_pai, nome_mae, senha) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+    // Usando um CPF/contato genérico e strings vazias para os demais
+    const values = [
+      'professor', nome, '1900-01-01', disciplina, '', '', '', '', '', '', '', '', hashSenha
+    ];
+
+    db.query(sql, values, (err) => {
+      if (err) {
+        console.error("Erro no banco de dados:", err);
+        if (err.code === "ER_DUP_ENTRY") {
+          return res.status(409).json({ error: "Professor já cadastrado." });
+        }
+        return res.status(500).json({ error: "Erro ao cadastrar professor." });
+      }
+      res.status(201).json({ message: "Professor cadastrado com sucesso!" });
+    });
+  } catch (error) {
+    console.error("Erro de servidor:", error);
+    res.status(500).json({ error: "Erro interno do servidor." });
+  }
+});
+
 app.listen(3000, () => {
   console.log("Servidor rodando na porta 3000");
 });
