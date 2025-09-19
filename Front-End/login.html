@@ -207,15 +207,17 @@
 
             const result = await response.json();
 
-            if (response.ok) {
-              if (result.usuario.tipo === "aluno") {
-                localStorage.setItem(
+          if (response.ok) {
+              // SALVA O USUÁRIO LOGADO NO localStorage, independente do tipo
+              localStorage.setItem(
                   "usuarioLogado",
                   JSON.stringify(result.usuario)
-                );
-                window.location.href = "painel_pessoal.html";
+              );
+
+              if (result.usuario.tipo === "aluno") {
+                  window.location.href = "painel_pessoal.html";
               } else {
-                alert("Apenas alunos podem acessar essa área.");
+                  window.location.href = "painel_professor.html";
               }
             } else {
               alert(result.error);

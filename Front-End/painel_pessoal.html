@@ -104,6 +104,7 @@
 
       <div class="tabs">
         <div class="tab active" onclick="showTab('dados')">DADOS PESSOAIS</div>
+        <div class="tab" onclick="showTab('banca')">MINHA BANCA</div>
         <div class="tab" onclick="showTab('notas')">VISUALIZAR NOTAS</div>
         <div class="tab" onclick="showTab('alertas')">VISUALIZAR ALERTAS</div>
         <div class="tab" onclick="showTab('upload')">UPLOAD</div>
@@ -128,6 +129,10 @@
         </div>
       </div>
 
+      <div id="banca" class="tab-content">
+        <div id="banca-info"></div>
+      </div>
+
       <div id="notas" class="tab-content">
         <p>As notas aparecerão aqui...</p>
       </div>
@@ -147,57 +152,106 @@
 
     <script>
       function showTab(tabId) {
-        document
-          .querySelectorAll(".tab-content")
-          .forEach((tab) => tab.classList.remove("active"));
-        document
-          .querySelectorAll(".tab")
-          .forEach((tab) => tab.classList.remove("active"));
-        document.getElementById(tabId).classList.add("active");
-        event.target.classList.add("active");
+          document.querySelectorAll(".tab-content").forEach((tab) => tab.classList.remove("active"));
+          document.querySelectorAll(".tab").forEach((tab) => tab.classList.remove("active"));
+          document.getElementById(tabId).classList.add("active");
+          document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add("active");
+
+          if (tabId === 'banca') {
+              loadBanca();
+          }
       }
 
       const fotoInput = document.getElementById("fotoInput");
       const fotoAluno = document.getElementById("fotoAluno");
 
       fotoInput.addEventListener("change", function () {
-        const file = this.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function (e) {
-            fotoAluno.src = e.target.result;
-          };
-          reader.readAsDataURL(file);
-        }
+          const file = this.files[0];
+          if (file) {
+              const reader = new FileReader();
+              reader.onload = function (e) {
+                  fotoAluno.src = e.target.result;
+              };
+              reader.readAsDataURL(file);
+          }
       });
-      window.addEventListener("DOMContentLoaded", () => {
-        const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
 
-        if (!usuario) {
-          alert("Usuário não logado!");
-          window.location.href = "login.html";
-          return;
-        }
+      let todosProfessores = [];
 
-        document.getElementById("nomeHeader").textContent = usuario.nome;
-        document.getElementById("nomeAluno").textContent = usuario.nome;
-        document.getElementById("dataNascimento").textContent =
-          usuario.data_nascimento;
-        document.getElementById("contato").textContent = usuario.contato;
-        document.getElementById("cpf").textContent = usuario.cpf;
-        document.getElementById("rg").textContent = usuario.rg;
-        document.getElementById("cidade").textContent = usuario.cidade;
-        document.getElementById("endereco").textContent = usuario.endereco;
-        document.getElementById("estadoCivil").textContent =
-          usuario.estado_civil;
-        document.getElementById("sexo").textContent = usuario.sexo;
-        document.getElementById("nomePai").textContent = usuario.nome_pai;
-        document.getElementById("nomeMae").textContent = usuario.nome_mae;
+      window.addEventListener("DOMContentLoaded", async () => {
+          const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
 
-        if (usuario.foto) {
-          document.getElementById("fotoAluno").src = usuario.foto;
-        }
+          if (!usuario) {
+              alert("Usuário não logado!");
+              window.location.href = "login.html";
+              return;
+          }
+
+          document.getElementById("nomeHeader").textContent = usuario.nome;
+          document.getElementById("nomeAluno").textContent = usuario.nome;
+          document.getElementById("dataNascimento").textContent = usuario.data_nascimento;
+          document.getElementById("contato").textContent = usuario.contato;
+          document.getElementById("cpf").textContent = usuario.cpf;
+          document.getElementById("rg").textContent = usuario.rg;
+          document.getElementById("cidade").textContent = usuario.cidade;
+          document.getElementById("endereco").textContent = usuario.endereco;
+          document.getElementById("estadoCivil").textContent = usuario.estado_civil;
+          document.getElementById("sexo").textContent = usuario.sexo;
+          document.getElementById("nomePai").textContent = usuario.nome_pai;
+          document.getElementById("nomeMae").textContent = usuario.nome_mae;
+
+          if (usuario.foto) {
+              document.getElementById("fotoAluno").src = usuario.foto;
+          }
+
+          await loadAllProfessores();
       });
+
+      async function loadAllProfessores() {
+          try {
+              const response = await fetch("http://localhost:3000/api/professores");
+              todosProfessores = await response.json();
+          } catch (error) {
+              console.error("Erro ao carregar todos os professores:", error);
+          }
+      }
+
+      function getProfessorNameById(id) {
+          const prof = todosProfessores.find(p => p.id == id);
+          return prof ? prof.nome : 'Professor não encontrado';
+      }
+
+      function loadBanca() {
+          const bancaInfo = document.getElementById('banca-info');
+          bancaInfo.innerHTML = '';
+
+          const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+
+          const bancaSalva = localStorage.getItem(`banca_aluno_${usuario.id}`);
+
+          if (bancaSalva) {
+              const banca = JSON.parse(bancaSalva);
+              
+              const prof1Nome = getProfessorNameById(banca.professor1Id);
+              const prof2Nome = getProfessorNameById(banca.professor2Id);
+       
+              const professoresBanca = [
+                  { nome: prof1Nome, funcao: 'Professor(a) 1' },
+                  { nome: prof2Nome, funcao: 'Professor(a) 2' },
+              ];
+
+              professoresBanca.forEach(professor => {
+                  const li = document.createElement('li');
+                  li.innerHTML = `<strong>${professor.funcao}:</strong> ${professor.nome}`;
+                  bancaInfo.appendChild(li);
+              });
+          } else {
+              const aviso = document.createElement('p');
+              aviso.textContent = 'A banca examinadora ainda não foi definida. Por favor, aguarde a comunicação da coordenação.';
+              aviso.classList.add('aviso-banca');
+              bancaInfo.appendChild(aviso);
+          }
+      }
     </script>
   </body>
 </html>

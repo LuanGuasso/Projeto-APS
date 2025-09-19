@@ -108,6 +108,29 @@ app.post("/login", (req, res) => {
   );
 });
 
+app.put("/api/atualizar-tipo", (req, res) => {
+  const { id, tipo } = req.body;
+
+  if (!id || !tipo) {
+    return res.status(400).json({ error: "ID e novo tipo são obrigatórios." });
+  }
+
+  // A consulta SQL para atualizar o tipo do usuário
+  const sql = "UPDATE usuarios SET tipo = ? WHERE id = ?";
+
+  db.query(sql, [tipo, id], (err, result) => {
+    if (err) {
+      console.error("Erro ao atualizar o tipo de usuário:", err);
+      return res.status(500).json({ error: "Erro ao atualizar o tipo de usuário." });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Usuário não encontrado." });
+    }
+
+    res.status(200).json({ message: "Tipo de usuário atualizado com sucesso!" });
+  });
+});
 
 // Rota para listar todos os alunos
 app.get("/api/alunos", (req, res) => {

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Painel do Professor</title>
     <style>
+      /* Seu CSS existente */
       @import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
 
       body {
@@ -256,6 +257,9 @@
         <div class="tab active" onclick="showTab('gerenciar_alunos')">
           Gerenciar Alunos
         </div>
+        <div class="tab" onclick="showTab('definir_banca')">
+          Definir Banca
+        </div>
         <div class="tab" onclick="showTab('gerenciar_professores')">
           Gerenciar Professores
         </div>
@@ -303,6 +307,26 @@
         </div>
       </div>
 
+      <div id="definir_banca" class="tab-content coordenador-only">
+        <h3>Definição de Banca Examinadora</h3>
+        <p>Apenas o Coordenador pode definir a banca.</p>
+        <div class="form-section">
+          <label for="alunoParaBanca">Aluno:</label>
+          <select id="alunoParaBanca">
+            <option value="">Selecione um aluno</option>
+          </select>
+          <label for="professorBanca1">Professor da Banca 1:</label>
+          <select id="professorBanca1">
+            <option value="">Selecione um professor</option>
+          </select>
+          <label for="professorBanca2">Professor da Banca 2:</label>
+          <select id="professorBanca2">
+            <option value="">Selecione um professor</option>
+          </select>
+          <button onclick="definirBanca()">Definir Banca</button>
+        </div>
+      </div>
+
       <div id="gerenciar_professores" class="tab-content">
         <h3>Cadastro de Professores</h3>
         <div class="form-section">
@@ -334,33 +358,16 @@
           <label for="criterioNota">Critério de Avaliação:</label>
           <select id="criterioNota">
             <option value="proposta">Proposta</option>
-            <option value="reelaboracao_proposta">Reelaboração Proposta</option>
+            <option value="reelaboracao_proposta">
+              Reelaboração Proposta
+            </option>
             <option value="tc">Trabalho de Conclusão (TC)</option>
             <option value="reelaboracao_tc">Reelaboração de TC</option>
           </select>
           <div id="notasPorCriterio"></div>
           <button onclick="lancarNotas()">Lançar Notas</button>
         </div>
-
-        <h3 class="coordenador-only">
-          Definição de Banca Examinadora (Coordenador)
-        </h3>
-        <div class="form-section coordenador-only">
-          <label for="alunoParaBanca">Aluno:</label>
-          <select id="alunoParaBanca">
-            <option value="">Selecione um aluno</option>
-          </select>
-          <label for="professorBanca1">Professor da Banca 1:</label>
-          <select id="professorBanca1">
-            <option value="">Selecione um professor</option>
-          </select>
-          <label for="professorBanca2">Professor da Banca 2:</label>
-          <select id="professorBanca2">
-            <option value="">Selecione um professor</option>
-          </select>
-          <button onclick="definirBanca()">Definir Banca</button>
         </div>
-      </div>
 
       <div id="cronograma" class="tab-content">
         <h3 class="coordenador-only">
@@ -370,7 +377,9 @@
           <label for="tipoEntregaCronograma">Tipo de Entrega:</label>
           <select id="tipoEntregaCronograma">
             <option value="proposta">Proposta</option>
-            <option value="reelaboracao_proposta">Reelaboração Proposta</option>
+            <option value="reelaboracao_proposta">
+              Reelaboração Proposta
+            </option>
             <option value="tc">Trabalho de Conclusão (TC)</option>
             <option value="reelaboracao_tc">Reelaboração de TC</option>
           </select>
@@ -432,485 +441,387 @@
         </div>
       </div>
     </div>
-
     <script>
-      function showTab(tabId) {
-        document
-          .querySelectorAll(".tab-content")
-          .forEach((tab) => tab.classList.remove("active"));
-        document
-          .querySelectorAll(".tab")
-          .forEach((tab) => tab.classList.remove("active"));
-        document.getElementById(tabId).classList.add("active");
-        event.target.classList.add("active");
-        toggleCoordenadorFeatures();
-      }
+    function showTab(tabId) {
+        document.querySelectorAll(".tab-content").forEach((tab) => {
+            tab.classList.remove("active");
+        });
+        document.querySelectorAll(".tab").forEach((tab) => {
+            tab.classList.remove("active");
+        });
+        const activeTab = document.getElementById(tabId);
+        activeTab.classList.add("active");
+        document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add("active");
 
-      const fotoInput = document.getElementById("fotoInput");
-      const fotoUsuario = document.getElementById("fotoUsuario");
-      fotoInput.addEventListener("change", function () {
+        if (tabId === 'definir_banca') {
+            toggleCoordenadorFeatures(true);
+        } else {
+            toggleCoordenadorFeatures(false);
+        }
+    }
+
+    function toggleCoordenadorFeatures(forceShow = false) {
+        const isCoordenador = document.getElementById("checkboxCoordenador").checked || (usuarioLogado && usuarioLogado.tipo === "coordenador");
+        
+        document.querySelectorAll(".coordenador-only").forEach((el) => {
+            el.style.display = (isCoordenador && forceShow) ? "block" : "none";
+        });
+
+        if (isCoordenador) {
+            document.querySelector(".user-role").textContent = "Coordenador";
+        } else {
+            document.querySelector(".user-role").textContent = "Professor";
+        }
+    }
+
+    const fotoInput = document.getElementById("fotoInput");
+    const fotoUsuario = document.getElementById("fotoUsuario");
+    fotoInput.addEventListener("change", function () {
         const file = this.files[0];
         if (file) {
-          const reader = new FileReader();
-          reader.onload = function (e) {
-            fotoUsuario.src = e.target.result;
-          };
-          reader.readAsDataURL(file);
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                fotoUsuario.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         }
-      });
+    });
 
-      const usuarioLogado = JSON.parse(localStorage.getItem("usuarioLogado"));
+    const usuarioLogado = JSON.parse(localStorage.getItem("usuarioLogado"));
 
-      document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", () => {
         if (!usuarioLogado) {
-          alert("Usuário não logado!");
-          window.location.href = "login.html";
-          return;
+            alert("Usuário não logado!");
+            window.location.href = "login.html";
+            return;
         }
 
         document.getElementById("nomeHeader").textContent = usuarioLogado.nome;
         if (usuarioLogado.foto) {
-          document.getElementById("fotoUsuario").src = usuarioLogado.foto;
+            document.getElementById("fotoUsuario").src = usuarioLogado.foto;
         }
 
-        if (
-          usuarioLogado.tipo === "coordenador" ||
-          usuarioLogado.eh_coordenador
-        ) {
-          document.getElementById("checkboxCoordenador").checked = true;
-          document.querySelector(".user-role").textContent = "Coordenador";
+        if (usuarioLogado.tipo === "coordenador" || usuarioLogado.eh_coordenador) {
+            document.getElementById("checkboxCoordenador").checked = true;
+            document.querySelector(".user-role").textContent = "Coordenador";
         }
 
         loadProfessorFeatures();
-        toggleCoordenadorFeatures();
+        toggleCoordenadorFeatures(false);
         loadDataForTabs();
-      });
+    });
 
-      function toggleCoordenadorFeatures() {
-        const isCoordenador =
-          document.getElementById("checkboxCoordenador").checked ||
-          (usuarioLogado && usuarioLogado.tipo === "coordenador");
-        document.querySelectorAll(".coordenador-only").forEach((el) => {
-          el.style.display = isCoordenador ? "block" : "none";
-        });
-        if (isCoordenador) {
-          document.querySelector(".user-role").textContent = "Coordenador";
-        } else {
-          document.querySelector(".user-role").textContent = "Professor";
+    document.getElementById("checkboxCoordenador").addEventListener("change", async function () {
+        const isCoordenador = this.checked;
+        const novoTipo = isCoordenador ? "coordenador" : "professor";
+
+        try {
+            const response = await fetch("http://localhost:3000/api/atualizar-tipo", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    id: usuarioLogado.id,
+                    tipo: novoTipo
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // Atualiza o tipo no objeto do usuário logado e no localStorage
+                usuarioLogado.tipo = novoTipo;
+                localStorage.setItem("usuarioLogado", JSON.stringify(usuarioLogado));
+
+                // Exibe a mensagem de sucesso
+                alert(result.message);
+            } else {
+                // Se a requisição falhou, reverte o estado do checkbox
+                this.checked = !isCoordenador;
+                alert(`Erro ao atualizar: ${result.error}`);
+            }
+        } catch (error) {
+            console.error("Erro de conexão com o servidor:", error);
+            this.checked = !isCoordenador;
+            alert("Não foi possível conectar ao servidor para atualizar sua função.");
         }
-      }
 
-      document
-        .getElementById("checkboxCoordenador")
-        .addEventListener("change", function () {
-          toggleCoordenadorFeatures();
-          alert(
-            `Status de Coordenador ${
-              this.checked ? "ativado" : "desativado"
-            } para o usuário ${usuarioLogado.nome}.`
-          );
-        });
-      
+        // Chama a função de alternância, que vai ler a nova informação do localStorage
+        const activeTabId = document.querySelector('.tab-content.active').id;
+        toggleCoordenadorFeatures(activeTabId === 'definir_banca');
+    });
 
-
-
-
-      async function cadastrarAluno() {
+    async function cadastrarAluno() {
         const nome = document.getElementById("nomeAlunoMatriculado").value;
         const matricula = document.getElementById("matriculaAluno").value;
 
-        //PEDE Uma senha ou gera uma pra evitar bugs e deixar mais simpels tmb
         const senha = prompt("Digite uma senha para o novo aluno:", "123456");
 
         if (!nome || !matricula || !senha) {
-          alert(
-            "Por favor, preencha o nome, a matrícula e a senha do aluno."
-          );
-          return;
+            alert("Por favor, preencha o nome, a matrícula e a senha do aluno.");
+            return;
         }
 
         try {
-          const response = await fetch("http://localhost:3000/api/alunos", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nome, matricula, senha }),
-          });
+            const response = await fetch("http://localhost:3000/api/alunos", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nome, matricula, senha }),
+            });
 
-          const result = await response.json();
+            const result = await response.json();
 
-          if (response.ok) {
-            alert(result.message);
-            document.getElementById("nomeAlunoMatriculado").value = "";
-            document.getElementById("matriculaAluno").value = "";
-            loadAlunosMatriculados(); // Recarrega a lista de alunos
-            loadAlunosForSelect(); // Recarrega os selects
-          } else {
-            alert(`Erro: ${result.error}`);
-          }
+            if (response.ok) {
+                alert(result.message);
+                document.getElementById("nomeAlunoMatriculado").value = "";
+                document.getElementById("matriculaAluno").value = "";
+                loadAlunosMatriculados();
+                loadAlunosForSelect();
+            } else {
+                alert(`Erro: ${result.error}`);
+            }
         } catch (error) {
-          console.error("Erro ao cadastrar aluno:", error);
-          alert("Não foi possível conectar ao servidor.");
+            console.error("Erro ao cadastrar aluno:", error);
+            alert("Não foi possível conectar ao servidor.");
         }
-      }
+    }
 
-
-      //DEIXEI UMA COPIA DA FUNÇÃO ORIGINAL
-      /*function cadastrarAluno() {
-        const nome = document.getElementById("nomeAlunoMatriculado").value;
-        const matricula = document.getElementById("matriculaAluno").value;
-        if (nome && matricula) {
-          console.log("Cadastrando aluno:", nome, matricula);
-          alert("Aluno cadastrado com sucesso!");
-          document.getElementById("nomeAlunoMatriculado").value = "";
-          document.getElementById("matriculaAluno").value = "";
-          loadAlunosMatriculados();
-        } else {
-          alert("Por favor, preencha o nome e a matrícula do aluno.");
-        }
-      }*/
-
-      function definirOrientador() {
+    function definirOrientador() {
         const alunoId = document.getElementById("alunoSelecionado").value;
-        const orientadorId = document.getElementById(
-          "orientadorSelecionado"
-        ).value;
+        const orientadorId = document.getElementById("orientadorSelecionado").value;
         if (alunoId && orientadorId) {
-          console.log(
-            `Definindo orientador ${orientadorId} para o aluno ${alunoId}`
-          );
-          alert("Relação Aluno/Orientador definida com sucesso!");
+            console.log(`Definindo orientador ${orientadorId} para o aluno ${alunoId}`);
+            alert("Relação Aluno/Orientador definida com sucesso!");
         } else {
-          alert("Por favor, selecione um aluno e um orientador.");
+            alert("Por favor, selecione um aluno e um orientador.");
         }
-      }
+    }
 
-
-      async function cadastrarProfessor() {
+    async function cadastrarProfessor() {
         const nome = document.getElementById("nomeProfessor").value;
         const disciplina = document.getElementById("disciplinaProfessor").value;
         const senha = prompt("Digite uma senha para o novo professor:", "123456");
 
-
         if (!nome || !disciplina || !senha) {
-          alert("Por favor, preencha o nome, a disciplina e a senha do professor.");
-          return;
+            alert("Por favor, preencha o nome, a disciplina e a senha do professor.");
+            return;
         }
 
         try {
-          const response = await fetch("http://localhost:3000/api/professores", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nome, disciplina, senha }),
-          });
+            const response = await fetch("http://localhost:3000/api/professores", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nome, disciplina, senha }),
+            });
 
-          const result = await response.json();
+            const result = await response.json();
 
-          if (response.ok) {
-            alert(result.message);
-            document.getElementById("nomeProfessor").value = "";
-            document.getElementById("disciplinaProfessor").value = "";
-            loadProfessores(); // Recarrega a lista de professores
-            loadProfessoresForSelect(); // Recarrega os selects
-          } else {
-            alert(`Erro: ${result.error}`);
-          }
+            if (response.ok) {
+                alert(result.message);
+                document.getElementById("nomeProfessor").value = "";
+                document.getElementById("disciplinaProfessor").value = "";
+                loadProfessores();
+                loadProfessoresForSelect();
+            } else {
+                alert(`Erro: ${result.error}`);
+            }
         } catch (error) {
-          console.error("Erro ao cadastrar professor:", error);
-          alert("Não foi possível conectar ao servidor.");
+            console.error("Erro ao cadastrar professor:", error);
+            alert("Não foi possível conectar ao servidor.");
         }
-      }
+    }
 
-      /*function cadastrarProfessor() {
-        const nome = document.getElementById("nomeProfessor").value;
-        const disciplina = document.getElementById("disciplinaProfessor").value;
-        if (nome && disciplina) {
-          console.log("Cadastrando professor:", nome, disciplina);
-          alert("Professor cadastrado com sucesso!");
-          document.getElementById("nomeProfessor").value = "";
-          document.getElementById("disciplinaProfessor").value = "";
-          loadProfessores();
-        } else {
-          alert("Por favor, preencha o nome e a disciplina do professor.");
-        }
-      }*/
-
-      function lancarNotas() {
+    function lancarNotas() {
         const alunoId = document.getElementById("alunoParaNota").value;
         const criterio = document.getElementById("criterioNota").value;
 
-        console.log(
-          `Lançando notas para aluno ${alunoId}, critério ${criterio}`
-        );
+        console.log(`Lançando notas para aluno ${alunoId}, critério ${criterio}`);
 
         alert("Notas lançadas com sucesso!");
-      }
+    }
 
-      function definirBanca() {
+    function definirBanca() {
         const alunoId = document.getElementById("alunoParaBanca").value;
         const professor1Id = document.getElementById("professorBanca1").value;
         const professor2Id = document.getElementById("professorBanca2").value;
         if (alunoId && professor1Id && professor2Id) {
-          console.log(
-            `Definindo banca para ${alunoId} com ${professor1Id} e ${professor2Id}`
-          );
-
-          alert("Banca definida com sucesso!");
+            const banca = {
+                professor1Id,
+                professor2Id
+            };
+            localStorage.setItem(`banca_aluno_${alunoId}`, JSON.stringify(banca));
+            
+            console.log(`Banca definida para o aluno ${alunoId}`);
+            alert("Banca definida com sucesso!");
         } else {
-          alert("Por favor, selecione o aluno e os dois professores da banca.");
+            alert("Por favor, selecione o aluno e os dois professores da banca.");
         }
-      }
+    }
 
-      function definirCronograma() {
-        const tipoEntrega = document.getElementById(
-          "tipoEntregaCronograma"
-        ).value;
-        const dataEntrega = document.getElementById(
-          "dataEntregaCronograma"
-        ).value;
-        const horaEntrega = document.getElementById(
-          "horaEntregaCronograma"
-        ).value;
+    function loadBanca() {
+        const bancaInfo = document.getElementById('banca-info');
+        bancaInfo.innerHTML = '';
+
+        const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+        const bancaSalva = localStorage.getItem(`banca_aluno_${usuario.id}`);
+
+        if (bancaSalva) {
+            const banca = JSON.parse(bancaSalva);
+            
+            const prof1Nome = getProfessorNameById(banca.professor1Id);
+            const prof2Nome = getProfessorNameById(banca.professor2Id);
+            
+            const professoresBanca = [
+                { nome: prof1Nome, funcao: 'Professor(a) 1' },
+                { nome: prof2Nome, funcao: 'Professor(a) 2' },
+            ];
+
+            professoresBanca.forEach(professor => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${professor.funcao}:</strong> ${professor.nome}`;
+                bancaInfo.appendChild(li);
+            });
+        } else {
+            const aviso = document.createElement('p');
+            aviso.textContent = 'A banca examinadora ainda não foi definida. Por favor, aguarde a comunicação da coordenação.';
+            aviso.classList.add('aviso-banca');
+            bancaInfo.appendChild(aviso);
+        }
+    }
+
+    function definirCronograma() {
+        const tipoEntrega = document.getElementById("tipoEntregaCronograma").value;
+        const dataEntrega = document.getElementById("dataEntregaCronograma").value;
+        const horaEntrega = document.getElementById("horaEntregaCronograma").value;
         if (tipoEntrega && dataEntrega && horaEntrega) {
-          console.log(
-            `Definindo cronograma: ${tipoEntrega} para ${dataEntrega} às ${horaEntrega}`
-          );
-
-          alert("Prazo de entrega definido com sucesso!");
+            console.log(`Definindo cronograma: ${tipoEntrega} para ${dataEntrega} às ${horaEntrega}`);
+            alert("Prazo de entrega definido com sucesso!");
         } else {
-          alert("Por favor, preencha todos os campos do cronograma.");
+            alert("Por favor, preencha todos os campos do cronograma.");
         }
-      }
+    }
 
-      function registrarReuniao() {
+    function registrarReuniao() {
         const alunoId = document.getElementById("alunoReuniao").value;
         const dataReuniao = document.getElementById("dataReuniao").value;
         const observacoes = document.getElementById("observacoesReuniao").value;
         const documento = document.getElementById("documentoReuniao").files[0];
 
         if (alunoId && dataReuniao) {
-          console.log(
-            "Registrando reunião:",
-            alunoId,
-            dataReuniao,
-            observacoes,
-            documento
-          );
-
-          alert("Reunião registrada com sucesso!");
-
-          document.getElementById("alunoReuniao").value = "";
-          document.getElementById("dataReuniao").value = "";
-          document.getElementById("observacoesReuniao").value = "";
-          document.getElementById("documentoReuniao").value = "";
-          loadReunioes();
+            console.log("Registrando reunião:", alunoId, dataReuniao, observacoes, documento);
+            alert("Reunião registrada com sucesso!");
+            document.getElementById("alunoReuniao").value = "";
+            document.getElementById("dataReuniao").value = "";
+            document.getElementById("observacoesReuniao").value = "";
+            document.getElementById("documentoReuniao").value = "";
+            loadReunioes();
         } else {
-          alert("Por favor, selecione um aluno e a data da reunião.");
+            alert("Por favor, selecione um aluno e a data da reunião.");
         }
-      }
+    }
 
-      function loadProfessorFeatures() {
+    function loadProfessorFeatures() {
         console.log("Carregando funcionalidades específicas do professor...");
-
         loadProfessoresForSelect();
         loadAlunosForSelect();
-      }
+    }
 
-      function loadDataForTabs() {
+    function loadDataForTabs() {
         loadAlunosMatriculados();
         loadProfessores();
         loadPrazosAlertas();
         loadReunioes();
         generateNotasPorCriterioInputs();
-      }
+    }
 
-
-      async function loadAlunosMatriculados() {
+    async function loadAlunosMatriculados() {
         const listaAlunosEl = document.getElementById("listaAlunosMatriculados");
         listaAlunosEl.innerHTML = "<li>Carregando...</li>";
-
         try {
-          const response = await fetch("http://localhost:3000/api/alunos");
-          const alunos = await response.json();
-
-          listaAlunosEl.innerHTML = ""; // Limpa a lista
-          if (alunos.length === 0) {
-            listaAlunosEl.innerHTML = "<li>Nenhum aluno cadastrado.</li>";
-            return;
-          }
-
-          alunos.forEach((aluno) => {
-            const li = document.createElement("li");
-            // Ajuste para usar 'cpf' como matrícula, conforme definido no backend
-            li.textContent = `${aluno.nome} (Matrícula: ${aluno.cpf})`;
-            listaAlunosEl.appendChild(li);
-          });
-        } catch (error) {
-          console.error("Erro ao buscar alunos:", error);
-          listaAlunosEl.innerHTML = "<li>Erro ao carregar alunos.</li>";
-        }
-      }
-      /*
-      function loadAlunosMatriculados() {
-        const listaAlunosEl = document.getElementById(
-          "listaAlunosMatriculados"
-        );
-        listaAlunosEl.innerHTML = "";
-        console.log("Buscando alunos matriculados...");
-
-        const alunosExemplo = [
-          { id: 1, nome: "Aluno 1", matricula: "num matricula 1" },
-          { id: 2, nome: "Aluno 2", matricula: "num matricula 2" },
-        ];
-        alunosExemplo.forEach((aluno) => {
-          const li = document.createElement("li");
-          li.textContent = `${aluno.nome} (Matrícula: ${aluno.matricula})`;
-          listaAlunosEl.appendChild(li);
-        });
-      }*/
-      
-      async function loadAlunosForSelect() {
-        const selects = [
-          document.getElementById("alunoSelecionado"),
-          document.getElementById("alunoParaNota"),
-          document.getElementById("alunoParaBanca"),
-          document.getElementById("alunoReuniao"),
-        ];
-
-        try {
-          const response = await fetch("http://localhost:3000/api/alunos");
-          const alunos = await response.json();
-
-          selects.forEach(select => {
-            select.innerHTML = '<option value="">Selecione um aluno</option>'; // Limpa e adiciona a opção padrão
+            const response = await fetch("http://localhost:3000/api/alunos");
+            const alunos = await response.json();
+            listaAlunosEl.innerHTML = "";
+            if (alunos.length === 0) {
+                listaAlunosEl.innerHTML = "<li>Nenhum aluno cadastrado.</li>";
+                return;
+            }
             alunos.forEach((aluno) => {
-              const option = document.createElement("option");
-              option.value = aluno.id;
-              option.textContent = aluno.nome;
-              select.appendChild(option);
+                const li = document.createElement("li");
+                li.textContent = `${aluno.nome} (Matrícula: ${aluno.cpf})`;
+                listaAlunosEl.appendChild(li);
             });
-          });
         } catch (error) {
-          console.error("Erro ao buscar alunos para os selects:", error);
+            console.error("Erro ao buscar alunos:", error);
+            listaAlunosEl.innerHTML = "<li>Erro ao carregar alunos.</li>";
         }
-      }
-      /*
-      function loadAlunosForSelect() {
-        const selectAluno = document.getElementById("alunoSelecionado");
-        const selectAlunoNota = document.getElementById("alunoParaNota");
-        const selectAlunoBanca = document.getElementById("alunoParaBanca");
-        const selectAlunoReuniao = document.getElementById("alunoReuniao");
-        console.log("Buscando alunos para selects...");
+    }
 
-        const alunosExemplo = [
-          { id: 1, nome: "Aluno 1" },
-          { id: 2, nome: "Aluno 2" },
-          { id: 3, nome: "Aluno 3" },
-        ];
-        alunosExemplo.forEach((aluno) => {
-          const option = document.createElement("option");
-          option.value = aluno.id;
-          option.textContent = aluno.nome;
-          selectAluno.appendChild(option);
-          selectAlunoNota.appendChild(option.cloneNode(true));
-          selectAlunoBanca.appendChild(option.cloneNode(true));
-          selectAlunoReuniao.appendChild(option.cloneNode(true));
+    async function loadAlunosForSelect() {
+        const selects = document.querySelectorAll("#alunoSelecionado, #alunoParaBanca, #alunoParaNota, #alunoReuniao");
+        selects.forEach((select) => {
+            select.innerHTML = '<option value="">Selecione um aluno</option>';
         });
-      }
-        */
-
-      async function loadProfessores() {
-        const listaProfessoresEl = document.getElementById("listaProfessores");
-        listaProfessoresEl.innerHTML = "<li>Carregando...</li>";
-
         try {
-          const response = await fetch("http://localhost:3000/api/professores");
-          const professores = await response.json();
-          
-          listaProfessoresEl.innerHTML = ""; // Limpa a lista
-          if (professores.length === 0) {
-              listaProfessoresEl.innerHTML = "<li>Nenhum professor cadastrado.</li>";
-              return;
-          }
-
-          professores.forEach((prof) => {
-            const li = document.createElement("li");
-            // Adapte caso adicione o campo 'disciplina' ao retorno da API
-            li.textContent = `${prof.nome}`;
-            listaProfessoresEl.appendChild(li);
-          });
-        } catch (error) {
-            console.error("Erro ao buscar professores:", error);
-            listaProfessoresEl.innerHTML = "<li>Erro ao carregar professores.</li>";
-        }
-      }
-      /*
-      function loadProfessores() {
-        const listaProfessoresEl = document.getElementById("listaProfessores");
-        listaProfessoresEl.innerHTML = "";
-        console.log("Buscando professores cadastrados...");
-
-        const professoresExemplo = [
-          { id: 101, nome: "Prof. 1", disciplina: "Curso" },
-          { id: 102, nome: "Prof. 2", disciplina: "Curso" },
-        ];
-        professoresExemplo.forEach((prof) => {
-          const li = document.createElement("li");
-          li.textContent = `${prof.nome} (Disciplina: ${prof.disciplina})`;
-          listaProfessoresEl.appendChild(li);
-        });
-      }
-        */
-
-      async function loadProfessoresForSelect() {
-        const selects = [
-          document.getElementById("orientadorSelecionado"),
-          document.getElementById("professorBanca1"),
-          document.getElementById("professorBanca2"),
-        ];
-
-        try {
-            const response = await fetch("http://localhost:3000/api/professores");
-            const professores = await response.json();
-
-            selects.forEach(select => {
-                select.innerHTML = '<option value="">Selecione um professor</option>'; // Limpa e adiciona a opção padrão
-                professores.forEach((prof) => {
+            const response = await fetch("http://localhost:3000/api/alunos");
+            const alunos = await response.json();
+            selects.forEach((select) => {
+                alunos.forEach((aluno) => {
                     const option = document.createElement("option");
-                    option.value = prof.id;
-                    option.textContent = prof.nome;
+                    option.value = aluno.id;
+                    option.textContent = aluno.nome;
                     select.appendChild(option);
                 });
             });
         } catch (error) {
-            console.error("Erro ao buscar professores para os selects:", error);
+            console.error("Erro ao carregar alunos para os selects:", error);
         }
-      }
-      /*
-      function loadProfessoresForSelect() {
-        const selectOrientador = document.getElementById(
-          "orientadorSelecionado"
-        );
-        const selectBanca1 = document.getElementById("professorBanca1");
-        const selectBanca2 = document.getElementById("professorBanca2");
-        console.log("Buscando professores para selects...");
+    }
 
-        const professoresExemplo = [
-          { id: 101, nome: "Prof. 1" },
-          { id: 102, nome: "Prof. 2" },
-          { id: 103, nome: "Prof. 3" },
-        ];
-        professoresExemplo.forEach((prof) => {
-          const option = document.createElement("option");
-          option.value = prof.id;
-          option.textContent = prof.nome;
-          selectOrientador.appendChild(option);
-          selectBanca1.appendChild(option.cloneNode(true));
-          selectBanca2.appendChild(option.cloneNode(true));
+    async function loadProfessoresForSelect() {
+        const selects = document.querySelectorAll("#orientadorSelecionado, #professorBanca1, #professorBanca2");
+        selects.forEach((select) => {
+            select.innerHTML = '<option value="">Selecione um professor</option>';
         });
-      }
-        */
+        try {
+            const response = await fetch("http://localhost:3000/api/professores");
+            const professores = await response.json();
+            selects.forEach((select) => {
+                professores.forEach((professor) => {
+                    const option = document.createElement("option");
+                    option.value = professor.id;
+                    option.textContent = professor.nome;
+                    select.appendChild(option);
+                });
+            });
+        } catch (error) {
+            console.error("Erro ao carregar professores para os selects:", error);
+        }
+    }
 
-      function generateNotasPorCriterioInputs() {
+    async function loadProfessores() {
+        const listaProfessoresEl = document.getElementById("listaProfessores");
+        listaProfessoresEl.innerHTML = "<li>Carregando...</li>";
+        try {
+            const response = await fetch("http://localhost:3000/api/professores");
+            const professores = await response.json();
+            listaProfessoresEl.innerHTML = "";
+            if (professores.length === 0) {
+                listaProfessoresEl.innerHTML = "<li>Nenhum professor cadastrado.</li>";
+                return;
+            }
+            professores.forEach((prof) => {
+                const li = document.createElement("li");
+                li.textContent = `${prof.nome}`;
+                listaProfessoresEl.appendChild(li);
+            });
+        } catch (error) {
+            console.error("Erro ao buscar professores:", error);
+            listaProfessoresEl.innerHTML = "<li>Erro ao carregar professores.</li>";
+        }
+    }
+
+    function generateNotasPorCriterioInputs() {
         const container = document.getElementById("notasPorCriterio");
         const criterio = document.getElementById("criterioNota").value;
 
@@ -918,126 +829,76 @@
 
         let campos = [];
         switch (criterio) {
-          case "proposta":
-            campos = ["Qualidade da Proposta", "Originalidade", "Clareza"];
-            break;
-          case "reelaboracao_proposta":
-            campos = [
-              "Atendimento às Correções",
-              "Melhoria Geral",
-              "Profundidade",
-            ];
-            break;
-          case "tc":
-            campos = [
-              "Conteúdo Técnico",
-              "Estrutura do Trabalho",
-              "Resultados",
-            ];
-            break;
-          case "reelaboracao_tc":
-            campos = [
-              "Correções Implementadas",
-              "Qualidade da Apresentação",
-              "Conclusões",
-            ];
-            break;
+            case "proposta":
+                campos = ["Qualidade da Proposta", "Originalidade", "Clareza"];
+                break;
+            case "reelaboracao_proposta":
+                campos = ["Atendimento às Correções", "Melhoria Geral", "Profundidade"];
+                break;
+            case "tc":
+                campos = ["Conteúdo Técnico", "Estrutura do Trabalho", "Resultados"];
+                break;
+            case "reelaboracao_tc":
+                campos = ["Correções Implementadas", "Qualidade da Apresentação", "Conclusões"];
+                break;
         }
 
         campos.forEach((campo) => {
-          const div = document.createElement("div");
-          div.innerHTML = `
-                    <label for="${campo
-                      .toLowerCase()
-                      .replace(/\s+/g, "_")}">${campo}:</label>
-                    <input type="number" id="${campo
-                      .toLowerCase()
-                      .replace(
-                        /\s+/g,
-                        "_"
-                      )}" min="0" max="10" step="0.5" placeholder="Nota (0-10)">
+            const div = document.createElement("div");
+            div.innerHTML = `
+                <label for="${campo.toLowerCase().replace(/\s+/g, "_")}">${campo}:</label>
+                <input
+                    type="number"
+                    id="${campo.toLowerCase().replace(/\s+/g, "_")}"
+                    min="0"
+                    max="10"
+                    step="0.5"
+                    placeholder="Nota (0-10)"
+                />
                 `;
-          container.appendChild(div);
+            container.appendChild(div);
         });
-      }
+    }
 
-      document
-        .getElementById("criterioNota")
-        .addEventListener("change", generateNotasPorCriterioInputs);
-
-      function loadPrazosAlertas() {
+    function loadPrazosAlertas() {
+        console.log("Carregando prazos e alertas...");
         const listaPrazosEl = document.getElementById("listaPrazosEntrega");
-        const listaTemposEl = document.getElementById("listaTemposAvaliacao");
-        console.log("Buscando prazos e tempos...");
-
-        const prazos = [
-          { tipo: "Proposta", prazo: "2024-10-15" },
-          { tipo: "TC", prazo: "2024-12-01" },
+        listaPrazosEl.innerHTML = "";
+        const prazosExemplo = [
+            { tipo: "Proposta", data: "20/10/2025", hora: "23:59" },
+            { tipo: "TC", data: "15/12/2025", hora: "18:00" },
         ];
-        const tempos = [
-          { tipo: "Avaliação Proposta", tempo: "5 dias úteis" },
-          { tipo: "Avaliação TC", tempo: "7 dias úteis" },
-        ];
-
-        prazos.forEach((item) => {
-          const li = document.createElement("li");
-          li.textContent = `${item.tipo}: ${item.prazo}`;
-          listaPrazosEl.appendChild(li);
+        prazosExemplo.forEach((prazo) => {
+            const li = document.createElement("li");
+            li.textContent = `${prazo.tipo}: ${prazo.data} às ${prazo.hora}`;
+            listaPrazosEl.appendChild(li);
         });
-        tempos.forEach((item) => {
-          const li = document.createElement("li");
-          li.textContent = `${item.tipo}: ${item.tempo}`;
-          listaTemposEl.appendChild(li);
-        });
-      }
+    }
 
-      function loadReunioes() {
+    function loadReunioes() {
+        console.log("Carregando reuniões...");
         const listaReunioesEl = document.getElementById("listaReunioes");
         listaReunioesEl.innerHTML = "";
-        console.log("Buscando reuniões registradas...");
-
         const reunioesExemplo = [
-          {
-            id: 501,
-            aluno: "Ana Silva",
-            data: "2024-09-10",
-            observacoes: "Discussão sobre a introdução.",
-            documento: "doc_ana_1009.pdf",
-          },
-          {
-            id: 502,
-            aluno: "Bruno Costa",
-            data: "2024-09-12",
-            observacoes: "Feedback sobre a metodologia.",
-            documento: null,
-          },
+            {
+                aluno: "Aluno A",
+                data: "10/09/2025",
+                obs: "Discussão do escopo do projeto.",
+            },
+            {
+                aluno: "Aluno B",
+                data: "12/09/2025",
+                obs: "Revisão da bibliografia.",
+            },
         ];
         reunioesExemplo.forEach((reuniao) => {
-          const li = document.createElement("li");
-          li.innerHTML = `
-                    <strong>Aluno:</strong> ${
-                      reuniao.aluno
-                    }, <strong>Data:</strong> ${reuniao.data}<br>
-                    <strong>Observações:</strong> ${
-                      reuniao.observacoes || "Nenhuma"
-                    }<br>
-                    ${
-                      reuniao.documento
-                        ? `<strong>Documento:</strong> <a href="#">${reuniao.documento}</a>`
-                        : ""
-                    }
-                `;
-          listaReunioesEl.appendChild(li);
+            const li = document.createElement("li");
+            li.innerHTML = `<strong>Aluno:</strong> ${reuniao.aluno} <br>
+                    <strong>Data:</strong> ${reuniao.data} <br>
+                    <strong>Obs:</strong> ${reuniao.obs}`;
+            listaReunioesEl.appendChild(li);
         });
-      }
-
-      function loadInitialData() {
-        loadProfessorFeatures();
-        toggleCoordenadorFeatures();
-        loadDataForTabs();
-      }
-
-      document.addEventListener("DOMContentLoaded", loadInitialData);
+    }
     </script>
   </body>
 </html>
