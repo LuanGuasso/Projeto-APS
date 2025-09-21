@@ -115,7 +115,6 @@ app.put("/api/atualizar-tipo", (req, res) => {
     return res.status(400).json({ error: "ID e novo tipo são obrigatórios." });
   }
 
-  // A consulta SQL para atualizar o tipo do usuário
   const sql = "UPDATE usuarios SET tipo = ? WHERE id = ?";
 
   db.query(sql, [tipo, id], (err, result) => {
@@ -132,7 +131,6 @@ app.put("/api/atualizar-tipo", (req, res) => {
   });
 });
 
-// Rota para listar todos os alunos
 app.get("/api/alunos", (req, res) => {
   db.query(
     "SELECT id, nome, contato, cpf, cidade FROM usuarios WHERE tipo = 'aluno'",
@@ -146,7 +144,6 @@ app.get("/api/alunos", (req, res) => {
   );
 });
 
-// Rota para listar todos os professores
 app.get("/api/professores", (req, res) => {
   db.query(
     "SELECT id, nome, contato FROM usuarios WHERE tipo IN ('professor', 'coordenador')",
@@ -160,7 +157,6 @@ app.get("/api/professores", (req, res) => {
   );
 });
 
-// Rota para cadastrar um novo aluno (pelo painel do professor/coordenador)
 app.post("/api/alunos", async (req, res) => {
   const { nome, matricula, senha } = req.body;
 
@@ -172,12 +168,10 @@ app.post("/api/alunos", async (req, res) => {
 
   try {
     const hashSenha = await bcrypt.hash(senha, 10);
-    // SQL inclui todos os campos com valores padrão
     const sql = `INSERT INTO usuarios 
       (tipo, nome, data_nascimento, contato, cpf, rg, cidade, endereco, estado_civil, sexo, nome_pai, nome_mae, senha) 
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-    // Usando 'matricula' no campo 'cpf' e strings vazias para os demais
     const values = [
       'aluno', nome, '1900-01-01', '', matricula, '', '', '', '', '', '', '', hashSenha
     ];
@@ -198,7 +192,6 @@ app.post("/api/alunos", async (req, res) => {
   }
 });
 
-// Rota para cadastrar um novo professor (pelo painel do coordenador)
 app.post("/api/professores", async (req, res) => {
   const { nome, disciplina, senha } = req.body; 
 
@@ -210,12 +203,10 @@ app.post("/api/professores", async (req, res) => {
 
   try {
     const hashSenha = await bcrypt.hash(senha, 10);
-    // SQL inclui todos os campos com valores padrão
     const sql = `INSERT INTO usuarios 
       (tipo, nome, data_nascimento, contato, cpf, rg, cidade, endereco, estado_civil, sexo, nome_pai, nome_mae, senha) 
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-    // Usando um CPF/contato genérico e strings vazias para os demais
     const values = [
       'professor', nome, '1900-01-01', disciplina, '', '', '', '', '', '', '', '', hashSenha
     ];
@@ -234,6 +225,97 @@ app.post("/api/professores", async (req, res) => {
     console.error("Erro de servidor:", error);
     res.status(500).json({ error: "Erro interno do servidor." });
   }
+});
+
+app.post("/api/bancas", (req, res) => {
+    const { alunoId, professor1Id, professor2Id } = req.body;
+
+    if (!alunoId || !professor1Id || !professor2Id) {
+        return res.status(400).json({ error: "Dados da banca incompletos." });
+    }
+
+    const sql = `
+        INSERT INTO bancas (aluno_id, professor1_id, professor2_id)
+        VALUES (?, ?, ?)
+    `;
+
+    db.query(sql, [alunoId, professor1Id, professor2Id], (err) => {
+        if (err) {
+            console.error("Erro ao salvar a banca:", err);
+            return res.status(500).json({ error: "Erro ao salvar a banca no banco de dados." });
+        }
+        res.status(201).json({ message: "Banca salva com sucesso!" });
+    });
+});
+
+app.get("/api/bancas/:alunoId", (req, res) => {
+    const { alunoId } = req.params;
+
+    const sql = `
+        SELECT aluno_id, professor1_id, professor2_id
+        FROM bancas
+        WHERE aluno_id = ?
+        LIMIT 1
+    `;
+
+    db.query(sql, [alunoId], (err, results) => {
+        if (err) {
+            console.error("Erro ao buscar a banca:", err);
+            return res.status(500).json({ error: "Erro ao buscar a banca no banco de dados." });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ error: "Banca não encontrada para este aluno." });
+        }
+        res.status(200).json(results[0]);
+    });
+});
+
+app.post("/api/notas", async (req, res) => {
+    const { alunoId, professorId, dadosNotas } = req.body;
+
+    if (!alunoId || !professorId || !dadosNotas || dadosNotas.length === 0) {
+        return res.status(400).json({ error: "Dados de notas incompletos." });
+    }
+
+    try {
+        const sql = `INSERT INTO notas (aluno_id, professor_id, criterio, nota) VALUES ?`;
+
+        const values = dadosNotas.map(notaData => [alunoId, professorId, notaData.criterio, notaData.nota]);
+
+        db.query(sql, [values], (err) => {
+            if (err) {
+                console.error("Erro ao inserir notas:", err);
+                return res.status(500).json({ error: "Erro ao inserir notas no banco de dados." });
+            }
+            res.status(201).json({ message: "Notas lançadas com sucesso!" });
+        });
+    } catch (error) {
+        console.error("Erro interno do servidor ao lançar notas:", error);
+        res.status(500).json({ error: "Erro interno do servidor ao lançar notas." });
+    }
+});
+
+app.get("/api/notas/:alunoId", (req, res) => {
+    const { alunoId } = req.params;
+
+    const sql = `
+        SELECT 
+            n.criterio, 
+            n.nota, 
+            n.data_lancamento,
+            p.nome AS professor_nome
+        FROM notas AS n
+        JOIN usuarios AS p ON n.professor_id = p.id
+        WHERE n.aluno_id = ? 
+        ORDER BY n.data_lancamento DESC`;
+
+    db.query(sql, [alunoId], (err, results) => {
+        if (err) {
+            console.error("Erro ao buscar notas:", err);
+            return res.status(500).json({ error: "Erro ao buscar notas no banco de dados." });
+        }
+        res.status(200).json(results);
+    });
 });
 
 app.listen(3000, () => {

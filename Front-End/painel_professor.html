@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Painel do Professor</title>
     <style>
-      /* Seu CSS existente */
       @import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
 
       body {
@@ -530,14 +529,11 @@
             const result = await response.json();
 
             if (response.ok) {
-                // Atualiza o tipo no objeto do usuário logado e no localStorage
                 usuarioLogado.tipo = novoTipo;
                 localStorage.setItem("usuarioLogado", JSON.stringify(usuarioLogado));
 
-                // Exibe a mensagem de sucesso
                 alert(result.message);
             } else {
-                // Se a requisição falhou, reverte o estado do checkbox
                 this.checked = !isCoordenador;
                 alert(`Erro ao atualizar: ${result.error}`);
             }
@@ -547,7 +543,6 @@
             alert("Não foi possível conectar ao servidor para atualizar sua função.");
         }
 
-        // Chama a função de alternância, que vai ler a nova informação do localStorage
         const activeTabId = document.querySelector('.tab-content.active').id;
         toggleCoordenadorFeatures(activeTabId === 'definir_banca');
     });
@@ -632,46 +627,112 @@
         }
     }
 
-    function lancarNotas() {
-        const alunoId = document.getElementById("alunoParaNota").value;
-        const criterio = document.getElementById("criterioNota").value;
+    async function lancarNotas() {
+      const alunoId = document.getElementById("alunoParaNota").value;
+      const criterio = document.getElementById("criterioNota").value;
 
-        console.log(`Lançando notas para aluno ${alunoId}, critério ${criterio}`);
+      if (!alunoId || !criterio) {
+          alert("Por favor, selecione um aluno e um critério.");
+          return;
+      }
 
-        alert("Notas lançadas com sucesso!");
+      const dadosNotas = [];
+      const inputs = document.querySelectorAll("#notasPorCriterio input");
+
+      if (inputs.length === 0) {
+          alert("Nenhum campo de nota para lançar.");
+          return;
+      }
+
+      inputs.forEach(input => {
+          const nota = parseFloat(input.value);
+          if (!isNaN(nota)) {
+              dadosNotas.push({
+                  criterio: input.id, 
+                  nota: nota
+              });
+          }
+      });
+
+      if (dadosNotas.length === 0) {
+          alert("Por favor, insira pelo menos uma nota válida.");
+          return;
+      }
+
+      try {
+          const response = await fetch("http://localhost:3000/api/notas", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ alunoId, dadosNotas }),
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+              alert(result.message);
+              inputs.forEach(input => input.value = "");
+          } else {
+              alert(`Erro: ${result.error}`);
+          }
+      } catch (error) {
+          console.error("Erro ao lançar notas:", error);
+          alert("Não foi possível conectar ao servidor para lançar as notas.");
+      }
+  }
+
+    async function definirBanca() {
+      const alunoId = document.getElementById("alunoParaBanca").value;
+      const professor1Id = document.getElementById("professorBanca1").value;
+      const professor2Id = document.getElementById("professorBanca2").value;
+
+      if (!alunoId || !professor1Id || !professor2Id) {
+          alert("Por favor, selecione o aluno e os dois professores da banca.");
+          return;
+      }
+
+      try {
+          const response = await fetch("http://localhost:3000/api/bancas", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ alunoId, professor1Id, professor2Id })
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+              alert(result.message);
+              console.log(`Banca definida para o aluno ${alunoId} e salva no banco de dados.`);
+          } else {
+              alert(`Erro: ${result.error}`);
+          }
+
+      } catch (error) {
+          console.error("Erro ao definir a banca:", error);
+          alert("Não foi possível conectar ao servidor para definir a banca.");
+      }
+  }
+
+    async function loadBanca() {
+    const bancaInfo = document.getElementById('banca-info');
+    bancaInfo.innerHTML = '';
+
+    const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+    
+    if (!usuario) {
+        bancaInfo.innerHTML = '<p class="aviso-banca">Usuário não logado. Faça o login para ver a banca.</p>';
+        return;
     }
 
-    function definirBanca() {
-        const alunoId = document.getElementById("alunoParaBanca").value;
-        const professor1Id = document.getElementById("professorBanca1").value;
-        const professor2Id = document.getElementById("professorBanca2").value;
-        if (alunoId && professor1Id && professor2Id) {
-            const banca = {
-                professor1Id,
-                professor2Id
-            };
-            localStorage.setItem(`banca_aluno_${alunoId}`, JSON.stringify(banca));
-            
-            console.log(`Banca definida para o aluno ${alunoId}`);
-            alert("Banca definida com sucesso!");
-        } else {
-            alert("Por favor, selecione o aluno e os dois professores da banca.");
-        }
-    }
+    try {
+        const response = await fetch(`http://localhost:3000/api/bancas/${usuario.id}`);
+        const banca = await response.json();
 
-    function loadBanca() {
-        const bancaInfo = document.getElementById('banca-info');
-        bancaInfo.innerHTML = '';
+        if (response.ok) {
+            const prof1Nome = getProfessorNameById(banca.professor1_id);
+            const prof2Nome = getProfessorNameById(banca.professor2_id);
 
-        const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
-        const bancaSalva = localStorage.getItem(`banca_aluno_${usuario.id}`);
-
-        if (bancaSalva) {
-            const banca = JSON.parse(bancaSalva);
-            
-            const prof1Nome = getProfessorNameById(banca.professor1Id);
-            const prof2Nome = getProfessorNameById(banca.professor2Id);
-            
             const professoresBanca = [
                 { nome: prof1Nome, funcao: 'Professor(a) 1' },
                 { nome: prof2Nome, funcao: 'Professor(a) 2' },
@@ -684,11 +745,18 @@
             });
         } else {
             const aviso = document.createElement('p');
-            aviso.textContent = 'A banca examinadora ainda não foi definida. Por favor, aguarde a comunicação da coordenação.';
+            aviso.textContent = banca.error;
             aviso.classList.add('aviso-banca');
             bancaInfo.appendChild(aviso);
         }
+    } catch (error) {
+        console.error("Erro ao carregar a banca:", error);
+        const aviso = document.createElement('p');
+        aviso.textContent = 'Erro ao carregar a banca. Tente novamente mais tarde.';
+        aviso.classList.add('aviso-banca');
+        bancaInfo.appendChild(aviso);
     }
+}
 
     function definirCronograma() {
         const tipoEntrega = document.getElementById("tipoEntregaCronograma").value;
@@ -822,43 +890,49 @@
     }
 
     function generateNotasPorCriterioInputs() {
-        const container = document.getElementById("notasPorCriterio");
-        const criterio = document.getElementById("criterioNota").value;
+      const container = document.getElementById("notasPorCriterio");
+      const criterio = document.getElementById("criterioNota").value;
 
-        container.innerHTML = "";
+      container.innerHTML = "";
 
-        let campos = [];
-        switch (criterio) {
-            case "proposta":
-                campos = ["Qualidade da Proposta", "Originalidade", "Clareza"];
-                break;
-            case "reelaboracao_proposta":
-                campos = ["Atendimento às Correções", "Melhoria Geral", "Profundidade"];
-                break;
-            case "tc":
-                campos = ["Conteúdo Técnico", "Estrutura do Trabalho", "Resultados"];
-                break;
-            case "reelaboracao_tc":
-                campos = ["Correções Implementadas", "Qualidade da Apresentação", "Conclusões"];
-                break;
-        }
+      let campos = [];
+      let prefixoCriterio = "";
+      switch (criterio) {
+          case "proposta":
+              campos = ["Qualidade da Proposta", "Originalidade", "Clareza"];
+              prefixoCriterio = "proposta_";
+              break;
+          case "reelaboracao_proposta":
+              campos = ["Atendimento às Correções", "Melhoria Geral", "Profundidade"];
+              prefixoCriterio = "reelaboracao_proposta_";
+              break;
+          case "tc":
+              campos = ["Conteúdo Técnico", "Estrutura do Trabalho", "Resultados"];
+              prefixoCriterio = "tc_";
+              break;
+          case "reelaboracao_tc":
+              campos = ["Correções Implementadas", "Qualidade da Apresentação", "Conclusões"];
+              prefixoCriterio = "reelaboracao_tc_";
+              break;
+      }
 
-        campos.forEach((campo) => {
-            const div = document.createElement("div");
-            div.innerHTML = `
-                <label for="${campo.toLowerCase().replace(/\s+/g, "_")}">${campo}:</label>
-                <input
-                    type="number"
-                    id="${campo.toLowerCase().replace(/\s+/g, "_")}"
-                    min="0"
-                    max="10"
-                    step="0.5"
-                    placeholder="Nota (0-10)"
-                />
-                `;
-            container.appendChild(div);
-        });
-    }
+      campos.forEach((campo) => {
+          const idCampo = `${prefixoCriterio}${campo.toLowerCase().replace(/\s+/g, "_")}`;
+          const div = document.createElement("div");
+          div.innerHTML = `
+              <label for="${idCampo}">${campo}:</label>
+              <input
+                  type="number"
+                  id="${idCampo}"
+                  min="0"
+                  max="10"
+                  step="0.5"
+                  placeholder="Nota (0-10)"
+              />
+              `;
+          container.appendChild(div);
+      });
+  }
 
     function loadPrazosAlertas() {
         console.log("Carregando prazos e alertas...");

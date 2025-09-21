@@ -80,6 +80,33 @@
       .dados-lista p {
         margin: 5px 0;
       }
+
+      .avaliacao-container {
+          border: 1px solid #eee;
+          padding: 15px;
+          margin-bottom: 20px;
+          border-radius: 8px;
+          background-color: #f9f9f9;
+      }
+
+      .avaliacao-container h5 {
+          color: #0044cc;
+          border-bottom: 2px solid #ccc;
+          padding-bottom: 5px;
+          margin-top: 0;
+      }
+
+      .avaliacao-container h6 {
+          color: #555;
+          font-size: 1em;
+          margin: 10px 0 5px 0;
+      }
+
+      .avaliacao-container ul {
+          list-style: none;
+          padding-left: 10px;
+          margin-top: 0;
+      }
     </style>
   </head>
   <body>
@@ -134,7 +161,10 @@
       </div>
 
       <div id="notas" class="tab-content">
-        <p>As notas aparecerão aqui...</p>
+        <h3>Minhas Notas e Avaliações</h3>
+        <div id="notas-info">
+          <p>Carregando suas notas...</p>
+          </div>
       </div>
 
       <div id="alertas" class="tab-content">
@@ -160,6 +190,10 @@
           if (tabId === 'banca') {
               loadBanca();
           }
+
+          if (tabId === 'notas') {
+            loadNotas();
+        }
       }
 
       const fotoInput = document.getElementById("fotoInput");
@@ -221,37 +255,132 @@
           return prof ? prof.nome : 'Professor não encontrado';
       }
 
-      function loadBanca() {
-          const bancaInfo = document.getElementById('banca-info');
-          bancaInfo.innerHTML = '';
+      let bancaProfessores = {};
 
-          const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+async function loadBanca() {
+    const bancaInfo = document.getElementById('banca-info');
+    bancaInfo.innerHTML = '';
 
-          const bancaSalva = localStorage.getItem(`banca_aluno_${usuario.id}`);
+    const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+    
+    if (!usuario) {
+        bancaInfo.innerHTML = '<p class="aviso-banca">Usuário não logado. Faça o login para ver a banca.</p>';
+        return;
+    }
 
-          if (bancaSalva) {
-              const banca = JSON.parse(bancaSalva);
-              
-              const prof1Nome = getProfessorNameById(banca.professor1Id);
-              const prof2Nome = getProfessorNameById(banca.professor2Id);
-       
-              const professoresBanca = [
-                  { nome: prof1Nome, funcao: 'Professor(a) 1' },
-                  { nome: prof2Nome, funcao: 'Professor(a) 2' },
-              ];
+    try {
+        const response = await fetch(`http://localhost:3000/api/bancas/${usuario.id}`);
+        const banca = await response.json();
 
-              professoresBanca.forEach(professor => {
-                  const li = document.createElement('li');
-                  li.innerHTML = `<strong>${professor.funcao}:</strong> ${professor.nome}`;
-                  bancaInfo.appendChild(li);
-              });
-          } else {
-              const aviso = document.createElement('p');
-              aviso.textContent = 'A banca examinadora ainda não foi definida. Por favor, aguarde a comunicação da coordenação.';
-              aviso.classList.add('aviso-banca');
-              bancaInfo.appendChild(aviso);
-          }
-      }
+        if (response.ok) {
+            const prof1Nome = getProfessorNameById(banca.professor1_id);
+            const prof2Nome = getProfessorNameById(banca.professor2_id);
+            bancaProfessores = {
+                [banca.professor1_id]: prof1Nome,
+                [banca.professor2_id]: prof2Nome
+            };
+
+            const professoresBanca = [
+                { nome: prof1Nome, funcao: 'Professor(a) 1' },
+                { nome: prof2Nome, funcao: 'Professor(a) 2' },
+            ];
+
+            professoresBanca.forEach(professor => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${professor.funcao}:</strong> ${professor.nome}`;
+                bancaInfo.appendChild(li);
+            });
+        } else {
+            const aviso = document.createElement('p');
+            aviso.textContent = banca.error;
+            aviso.classList.add('aviso-banca');
+            bancaInfo.appendChild(aviso);
+        }
+    } catch (error) {
+        console.error("Erro ao carregar a banca:", error);
+        const aviso = document.createElement('p');
+        aviso.textContent = 'Erro ao carregar a banca. Tente novamente mais tarde.';
+        aviso.classList.add('aviso-banca');
+        bancaInfo.appendChild(aviso);
+    }
+}
+
+    async function loadNotas() {
+    const notasInfo = document.getElementById('notas-info');
+    notasInfo.innerHTML = '<p>Buscando notas...</p>';
+  
+    const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+  
+    if (!usuario || !usuario.id) {
+        notasInfo.innerHTML = '<p class="aviso-banca">Usuário não logado ou ID não encontrado.</p>';
+        return;
+    }
+  
+    try {
+        const response = await fetch(`http://localhost:3000/api/notas/${usuario.id}`);
+    
+        if (!response.ok) {
+            notasInfo.innerHTML = '<p class="aviso-banca">Não foi possível carregar as notas. Tente novamente.</p>';
+            return;
+        }
+
+        const notas = await response.json();
+    
+        if (notas && notas.length > 0) {
+            const notasAgrupadas = notas.reduce((acc, nota) => {
+                const [criterioPrincipal] = nota.criterio.split('_');
+                if (!acc[criterioPrincipal]) {
+                    acc[criterioPrincipal] = [];
+                }
+                acc[criterioPrincipal].push(nota);
+                return acc;
+            }, {});
+
+            let htmlContent = '<h4>Avaliações Detalhadas:</h4>';
+
+            for (const criterio in notasAgrupadas) {
+                const notasDoCriterio = notasAgrupadas[criterio];
+
+                const nomeCriterio = {
+                    'proposta': 'Proposta',
+                    'reelaboracao': 'Reelaboração',
+                    'tc': 'Trabalho de Conclusão'
+                }[criterio] || criterio;
+
+                htmlContent += `<div class="avaliacao-container">`;
+                htmlContent += `<h5>${nomeCriterio}</h5>`;
+                
+                const notasPorProfessor = notasDoCriterio.reduce((acc, nota) => {
+                    if (!acc[nota.professor_nome]) {
+                        acc[nota.professor_nome] = [];
+                    }
+                    acc[nota.professor_nome].push(nota);
+                    return acc;
+                }, {});
+
+                for (const professor in notasPorProfessor) {
+                    htmlContent += `<h6>Professor(a) ${professor}</h6>`;
+                    htmlContent += `<ul>`;
+                    
+                    notasPorProfessor[professor].forEach(nota => {
+                        const nomeSubCriterio = nota.criterio.split('_').slice(1).join(' ').replace(/\b\w/g, l => l.toUpperCase());
+                        htmlContent += `<li><strong>${nomeSubCriterio}:</strong> ${nota.nota} (Lançada em: ${new Date(nota.data_lancamento).toLocaleDateString()})</li>`;
+                    });
+                    htmlContent += `</ul>`;
+                }
+
+                htmlContent += `</div>`;
+            }
+
+            notasInfo.innerHTML = htmlContent;
+        } else {
+            notasInfo.innerHTML = '<p class="aviso-banca">Nenhuma nota foi lançada ainda.</p>';
+        }
+    } catch (error) {
+        console.error("Erro ao carregar as notas:", error);
+        notasInfo.innerHTML = '<p class="aviso-banca">Erro ao carregar notas. Verifique a conexão com o servidor.</p>';
+    }
+}
     </script>
   </body>
 </html>
