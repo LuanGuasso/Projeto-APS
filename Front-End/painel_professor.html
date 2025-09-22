@@ -770,23 +770,57 @@
         }
     }
 
-    function registrarReuniao() {
+    async function registrarReuniao() {
         const alunoId = document.getElementById("alunoReuniao").value;
-        const dataReuniao = document.getElementById("dataReuniao").value;
-        const observacoes = document.getElementById("observacoesReuniao").value;
-        const documento = document.getElementById("documentoReuniao").files[0];
+        const professorId = JSON.parse(localStorage.getItem("usuarioLogado")).id; // professor logado
+        const data = document.getElementById("dataReuniao").value;
+        const hora = document.getElementById("dataReuniao").value; // se tiver input separado para hora, use-o
+        const descricao = document.getElementById("observacoesReuniao").value;
 
-        if (alunoId && dataReuniao) {
-            console.log("Registrando reunião:", alunoId, dataReuniao, observacoes, documento);
-            alert("Reunião registrada com sucesso!");
-            document.getElementById("alunoReuniao").value = "";
-            document.getElementById("dataReuniao").value = "";
-            document.getElementById("observacoesReuniao").value = "";
-            document.getElementById("documentoReuniao").value = "";
-            loadReunioes();
-        } else {
-            alert("Por favor, selecione um aluno e a data da reunião.");
+        if (!alunoId || !professorId || !data || !hora) {
+            alert("Por favor, preencha todos os campos obrigatórios da reunião.");
+            return;
         }
+
+        try {
+            const response = await fetch("http://localhost:3000/api/reunioes", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ alunoId, professorId, data, hora, descricao })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert(result.message);
+            } else {
+                alert(result.error);
+            }
+        } catch (error) {
+            console.error("Erro ao marcar reunião:", error);
+            alert("Erro ao conectar com o servidor.");
+        }
+    }
+
+
+    async function carregarReunioesProfessor() {
+      const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+
+      try {
+        const response = await fetch(`http://localhost:3000/api/reunioes/professor/${usuario.id}`);
+        const reunioes = await response.json();
+
+        const lista = document.getElementById("listaReunioes");
+        lista.innerHTML = "";
+
+        reunioes.forEach(r => {
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${r.data} ${r.hora}</strong> - ${r.aluno_nome} (${r.descricao || "Sem descrição"})`;
+          lista.appendChild(li);
+        });
+      } catch (error) {
+        console.error("Erro ao carregar reuniões:", error);
+      }
     }
 
     function loadProfessorFeatures() {
@@ -799,7 +833,7 @@
         loadAlunosMatriculados();
         loadProfessores();
         loadPrazosAlertas();
-        loadReunioes();
+        carregarReunioesProfessor();
         generateNotasPorCriterioInputs();
     }
 
@@ -946,31 +980,6 @@
             const li = document.createElement("li");
             li.textContent = `${prazo.tipo}: ${prazo.data} às ${prazo.hora}`;
             listaPrazosEl.appendChild(li);
-        });
-    }
-
-    function loadReunioes() {
-        console.log("Carregando reuniões...");
-        const listaReunioesEl = document.getElementById("listaReunioes");
-        listaReunioesEl.innerHTML = "";
-        const reunioesExemplo = [
-            {
-                aluno: "Aluno A",
-                data: "10/09/2025",
-                obs: "Discussão do escopo do projeto.",
-            },
-            {
-                aluno: "Aluno B",
-                data: "12/09/2025",
-                obs: "Revisão da bibliografia.",
-            },
-        ];
-        reunioesExemplo.forEach((reuniao) => {
-            const li = document.createElement("li");
-            li.innerHTML = `<strong>Aluno:</strong> ${reuniao.aluno} <br>
-                    <strong>Data:</strong> ${reuniao.data} <br>
-                    <strong>Obs:</strong> ${reuniao.obs}`;
-            listaReunioesEl.appendChild(li);
         });
     }
     </script>

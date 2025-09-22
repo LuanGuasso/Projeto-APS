@@ -318,6 +318,67 @@ app.get("/api/notas/:alunoId", (req, res) => {
     });
 });
 
+app.post("/api/reunioes", (req, res) => {
+  const { alunoId, professorId, data, hora, descricao } = req.body;
+
+  if (!alunoId || !professorId || !data || !hora) {
+    return res.status(400).json({ error: "Preencha todos os campos obrigatórios." });
+  }
+
+  const sql = `INSERT INTO reunioes (aluno_id, professor_id, data, hora, descricao)
+               VALUES (?, ?, ?, ?, ?)`;
+
+  db.query(sql, [alunoId, professorId, data, hora, descricao], (err) => {
+    if (err) {
+      console.error("Erro ao salvar reunião:", err);
+      return res.status(500).json({ error: "Erro ao salvar reunião no banco de dados." });
+    }
+    res.status(201).json({ message: "Reunião marcada com sucesso!" });
+  });
+});
+
+// Listar reuniões de um aluno
+app.get("/api/reunioes/aluno/:alunoId", (req, res) => {
+  const { alunoId } = req.params;
+
+  const sql = `
+    SELECT r.*, p.nome AS professor_nome 
+    FROM reunioes r
+    JOIN usuarios p ON r.professor_id = p.id
+    WHERE r.aluno_id = ?
+    ORDER BY r.data ASC, r.hora ASC
+  `;
+
+  db.query(sql, [alunoId], (err, results) => {
+    if (err) {
+      console.error("Erro ao buscar reuniões:", err);
+      return res.status(500).json({ error: "Erro ao buscar reuniões." });
+    }
+    res.status(200).json(results);
+  });
+});
+
+// Listar reuniões de um professor
+app.get("/api/reunioes/professor/:professorId", (req, res) => {
+  const { professorId } = req.params;
+
+  const sql = `
+    SELECT r.*, a.nome AS aluno_nome 
+    FROM reunioes r
+    JOIN usuarios a ON r.aluno_id = a.id
+    WHERE r.professor_id = ?
+    ORDER BY r.data ASC, r.hora ASC
+  `;
+
+  db.query(sql, [professorId], (err, results) => {
+    if (err) {
+      console.error("Erro ao buscar reuniões:", err);
+      return res.status(500).json({ error: "Erro ao buscar reuniões." });
+    }
+    res.status(200).json(results);
+  });
+});
+
 app.listen(3000, () => {
   console.log("Servidor rodando na porta 3000");
 });
