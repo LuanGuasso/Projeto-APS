@@ -228,18 +228,18 @@ app.post("/api/professores", async (req, res) => {
 });
 
 app.post("/api/bancas", (req, res) => {
-    const { alunoId, professor1Id, professor2Id } = req.body;
+    const { alunoId, professor1Id, professor2Id, professor3Id } = req.body;
 
-    if (!alunoId || !professor1Id || !professor2Id) {
+    if (!alunoId || !professor1Id || !professor2Id || !professor3Id) {
         return res.status(400).json({ error: "Dados da banca incompletos." });
     }
 
     const sql = `
-        INSERT INTO bancas (aluno_id, professor1_id, professor2_id)
-        VALUES (?, ?, ?)
+        INSERT INTO bancas (aluno_id, professor1_id, professor2_id, professor3_id)
+        VALUES (?, ?, ?, ?)
     `;
 
-    db.query(sql, [alunoId, professor1Id, professor2Id], (err) => {
+    db.query(sql, [alunoId, professor1Id, professor2Id, professor3Id], (err) => {
         if (err) {
             console.error("Erro ao salvar a banca:", err);
             return res.status(500).json({ error: "Erro ao salvar a banca no banco de dados." });
@@ -252,7 +252,7 @@ app.get("/api/bancas/:alunoId", (req, res) => {
     const { alunoId } = req.params;
 
     const sql = `
-        SELECT aluno_id, professor1_id, professor2_id
+        SELECT aluno_id, professor1_id, professor2_id, professor3_id
         FROM bancas
         WHERE aluno_id = ?
         LIMIT 1

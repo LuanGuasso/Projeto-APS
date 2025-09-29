@@ -252,13 +252,13 @@
       });
 
       async function loadAllProfessores() {
-          try {
-              const response = await fetch("http://localhost:3000/api/professores");
-              todosProfessores = await response.json();
-          } catch (error) {
-              console.error("Erro ao carregar todos os professores:", error);
-          }
-      }
+        try {
+            const response = await fetch("http://localhost:3000/api/professores");
+            todosProfessores = await response.json();
+        } catch (error) {
+            console.error("Erro ao carregar todos os professores:", error);
+        }
+    }
 
       function getProfessorNameById(id) {
           const prof = todosProfessores.find(p => p.id == id);
@@ -267,53 +267,50 @@
 
       let bancaProfessores = {};
 
-      async function loadBanca() {
-          const bancaInfo = document.getElementById('banca-info');
-          bancaInfo.innerHTML = '';
+  async function loadBanca() {
+    const bancaInfo = document.getElementById('banca-info');
+    bancaInfo.innerHTML = '';
 
-          const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
-          
-          if (!usuario) {
-              bancaInfo.innerHTML = '<p class="aviso-banca">Usuário não logado. Faça o login para ver a banca.</p>';
-              return;
-          }
+    const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+    if (!usuario) {
+        bancaInfo.innerHTML = '<p class="aviso-banca">Usuário não logado. Faça o login para ver a banca.</p>';
+        return;
+    }
 
-          try {
-              const response = await fetch(`http://localhost:3000/api/bancas/${usuario.id}`);
-              const banca = await response.json();
+    try {
+        const response = await fetch(`http://localhost:3000/api/bancas/${usuario.id}`);
+        const banca = await response.json();
 
-              if (response.ok) {
-                  const prof1Nome = getProfessorNameById(banca.professor1_id);
-                  const prof2Nome = getProfessorNameById(banca.professor2_id);
-                  bancaProfessores = {
-                      [banca.professor1_id]: prof1Nome,
-                      [banca.professor2_id]: prof2Nome
-                  };
+        if (response.ok) {
+            const prof1Nome = getProfessorNameById(banca.professor1_id);
+            const prof2Nome = getProfessorNameById(banca.professor2_id);
+            const prof3Nome = getProfessorNameById(banca.professor3_id);
 
-                  const professoresBanca = [
-                      { nome: prof1Nome, funcao: 'Professor(a) 1' },
-                      { nome: prof2Nome, funcao: 'Professor(a) 2' },
-                  ];
+            const professoresBanca = [
+                { nome: prof1Nome, funcao: 'Professor(a) 1' },
+                { nome: prof2Nome, funcao: 'Professor(a) 2' },
+                { nome: prof3Nome, funcao: 'Orientador(a)' } 
+            ];
 
-                  professoresBanca.forEach(professor => {
-                      const li = document.createElement('li');
-                      li.innerHTML = `<strong>${professor.funcao}:</strong> ${professor.nome}`;
-                      bancaInfo.appendChild(li);
-                  });
-              } else {
-                  const aviso = document.createElement('p');
-                  aviso.textContent = banca.error;
-                  aviso.classList.add('aviso-banca');
-                  bancaInfo.appendChild(aviso);
-              }
-          } catch (error) {
-              console.error("Erro ao carregar a banca:", error);
-              const aviso = document.createElement('p');
-              aviso.textContent = 'Erro ao carregar a banca. Tente novamente mais tarde.';
-              aviso.classList.add('aviso-banca');
-              bancaInfo.appendChild(aviso);
-          }
-      }
+            professoresBanca.forEach(professor => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${professor.funcao}:</strong> ${professor.nome}`;
+                bancaInfo.appendChild(li);
+            });
+        } else {
+            const aviso = document.createElement('p');
+            aviso.textContent = banca.error;
+            aviso.classList.add('aviso-banca');
+            bancaInfo.appendChild(aviso);
+        }
+    } catch (error) {
+        console.error("Erro ao carregar a banca:", error);
+        const aviso = document.createElement('p');
+        aviso.textContent = 'Erro ao carregar a banca. Tente novamente mais tarde.';
+        aviso.classList.add('aviso-banca');
+        bancaInfo.appendChild(aviso);
+    }
+}
 
           async function loadNotas() {
           const notasInfo = document.getElementById('notas-info');

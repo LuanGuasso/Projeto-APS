@@ -322,6 +322,10 @@
           <select id="professorBanca2">
             <option value="">Selecione um professor</option>
           </select>
+          <label for="professorBanca3">Orientador:</label>
+          <select id="professorBanca3">
+            <option value="">Selecione um orientador</option>
+          </select>
           <button onclick="definirBanca()">Definir Banca</button>
         </div>
       </div>
@@ -648,7 +652,7 @@
           const nota = parseFloat(input.value);
           if (!isNaN(nota)) {
               dadosNotas.push({
-                  criterio: input.id, 
+                  criterio: input.id,
                   nota: nota
               });
           }
@@ -663,7 +667,11 @@
           const response = await fetch("http://localhost:3000/api/notas", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ alunoId, dadosNotas }),
+              body: JSON.stringify({
+                  alunoId,
+                  dadosNotas,
+                  professorId: usuarioLogado.id
+              }),
           });
 
           const result = await response.json();
@@ -678,15 +686,16 @@
           console.error("Erro ao lançar notas:", error);
           alert("Não foi possível conectar ao servidor para lançar as notas.");
       }
-  }
+    }
 
     async function definirBanca() {
       const alunoId = document.getElementById("alunoParaBanca").value;
       const professor1Id = document.getElementById("professorBanca1").value;
       const professor2Id = document.getElementById("professorBanca2").value;
+      const professor3Id = document.getElementById("professorBanca3").value; // novo
 
-      if (!alunoId || !professor1Id || !professor2Id) {
-          alert("Por favor, selecione o aluno e os dois professores da banca.");
+      if (!alunoId || !professor1Id || !professor2Id || !professor3Id) {
+          alert("Por favor, selecione o aluno e os três professores da banca.");
           return;
       }
 
@@ -696,7 +705,7 @@
               headers: {
                   "Content-Type": "application/json"
               },
-              body: JSON.stringify({ alunoId, professor1Id, professor2Id })
+              body: JSON.stringify({ alunoId, professor1Id, professor2Id, professor3Id })
           });
 
           const result = await response.json();
@@ -712,7 +721,8 @@
           console.error("Erro ao definir a banca:", error);
           alert("Não foi possível conectar ao servidor para definir a banca.");
       }
-  }
+    }
+
 
     async function loadBanca() {
     const bancaInfo = document.getElementById('banca-info');
@@ -881,7 +891,7 @@
     }
 
     async function loadProfessoresForSelect() {
-        const selects = document.querySelectorAll("#orientadorSelecionado, #professorBanca1, #professorBanca2");
+        const selects = document.querySelectorAll("#orientadorSelecionado, #professorBanca1, #professorBanca2, #professorBanca3");
         selects.forEach((select) => {
             select.innerHTML = '<option value="">Selecione um professor</option>';
         });

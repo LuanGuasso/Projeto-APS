@@ -208,7 +208,6 @@
             const result = await response.json();
 
           if (response.ok) {
-              // SALVA O USUÁRIO LOGADO NO localStorage, independente do tipo
               localStorage.setItem(
                   "usuarioLogado",
                   JSON.stringify(result.usuario)
