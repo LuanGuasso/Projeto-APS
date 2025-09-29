@@ -4,110 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Portal do Aluno</title>
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
-
-      body {
-        background-image: url(../images/unisc_fundo.jpg);
-        background-size: cover;
-        font-family: "Roboto Condensed", sans-serif;
-        font-weight: 600;
-        margin: 0;
-        padding: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .container {
-        width: 90vw;
-        background: white;
-        border: 6px solid #0044cc;
-        border-radius: 20px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        padding: 20px;
-      }
-
-      .header {
-        text-align: center;
-        margin-bottom: 20px;
-      }
-
-      .header img {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        border: 2px solid #ccc;
-        cursor: pointer;
-        object-fit: cover;
-      }
-
-      .header h2 {
-        margin: 10px 0 0 0;
-        font-size: 22px;
-        font-weight: bold;
-      }
-
-      .tabs {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        border-bottom: 2px solid #ccc;
-        margin-bottom: 20px;
-      }
-
-      .tab {
-        cursor: pointer;
-        font-weight: bold;
-        padding: 10px;
-        color: #333;
-      }
-
-      .tab.active {
-        color: #0044cc;
-        border-bottom: 3px solid #0044cc;
-      }
-
-      .tab-content {
-        display: none;
-      }
-
-      .tab-content.active {
-        display: block;
-        padding: 10px;
-      }
-
-      .dados-lista p {
-        margin: 5px 0;
-      }
-
-      .avaliacao-container {
-          border: 1px solid #eee;
-          padding: 15px;
-          margin-bottom: 20px;
-          border-radius: 8px;
-          background-color: #f9f9f9;
-      }
-
-      .avaliacao-container h5 {
-          color: #0044cc;
-          border-bottom: 2px solid #ccc;
-          padding-bottom: 5px;
-          margin-top: 0;
-      }
-
-      .avaliacao-container h6 {
-          color: #555;
-          font-size: 1em;
-          margin: 10px 0 5px 0;
-      }
-
-      .avaliacao-container ul {
-          list-style: none;
-          padding-left: 10px;
-          margin-top: 0;
-      }
-    </style>
+    <link rel="stylesheet" href="painel_pessoal.css">
   </head>
   <body>
     <div class="container">
@@ -409,7 +306,6 @@
         }
       }
 
-      // chama quando a aba "reunioes" for aberta
       if (tabId === 'reunioes') {
         loadReunioesAluno();
       }
