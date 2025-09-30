@@ -4,17 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Portal do Aluno</title>
-    <link rel="stylesheet" href="painel_pessoal.css">
+    <link rel="stylesheet" href="painel_pessoal.css" />
   </head>
   <body>
     <div class="container">
       <div class="header">
         <label for="fotoInput">
-          <img
-            id="fotoAluno"
-            src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
-            alt="Foto do Aluno"
-          />
+          <img id="fotoAluno" src="../images/aluno.png" alt="Foto do Aluno" />
         </label>
         <input
           type="file"
@@ -62,7 +58,7 @@
         <h3>Minhas Notas e Avaliações</h3>
         <div id="notas-info">
           <p>Carregando suas notas...</p>
-          </div>
+        </div>
       </div>
 
       <div id="alertas" class="tab-content">
@@ -70,30 +66,42 @@
       </div>
 
       <div id="reunioes" class="tab-content">
-      <h3>Minhas Reuniões</h3>
-      <ul id="listaReunioesAluno"></ul>
-<ul id="listaDocumentosAluno"></ul>
-    </div>
+        <h3>Minhas Reuniões</h3>
+        <ul id="listaReunioesAluno"></ul>
+      </div>
 
+      <div id="upload" class="tab-content">
+         
+        <h3>Upload de Documentos</h3>
+         
+        <div class="form-section">
+             
+          <label for="descricaoUpload"
+            >Descrição/Tipo de Entrega (Ex: Proposta Final, Versão 1 do
+            TC):</label
+          >
+             
+          <input
+            type="text"
+            id="descricaoUpload"
+            placeholder="Digite a descrição do documento"
+          />
 
-<div id="upload" class="tab-content">
-  <h3>Upload de Documentos</h3>
-  <div class="form-section">
-    <label for="descricaoUpload">Descrição/Tipo de Entrega (Ex: Proposta Final, Versão 1 do TC):</label>
-    <input type="text" id="descricaoUpload" placeholder="Digite a descrição do documento" />
+              <label for="documentoUpload">Selecione o documento:</label>    
+          <input type="file" id="documentoUpload" />
 
-    <label for="documentoUpload">Selecione o documento:</label>
-    <input type="file" id="documentoUpload" />
+              <button onclick="enviarUpload()">Enviar Documento</button>  
+        </div>
 
-    <button onclick="enviarUpload()">Enviar Documento</button>
-  </div>
-
-    <h4>Documentos Enviados:</h4>
-  <ul id="listaUploads">
-    <li>Nenhum documento enviado ainda.</li>
-  </ul>
-</div>
-
+         
+        <h4>Documentos Enviados:</h4>
+         
+        <ul id="listaUploads">
+             
+          <li>Nenhum documento enviado ainda.</li>
+           
+        </ul>
+      </div>
 
       <div id="cronograma" class="tab-content">
         <p>O cronograma aparecerá aqui...</p>
@@ -102,376 +110,450 @@
 
     <script>
       function showTab(tabId) {
-          document.querySelectorAll(".tab-content").forEach((tab) => tab.classList.remove("active"));
-          document.querySelectorAll(".tab").forEach((tab) => tab.classList.remove("active"));
-          document.getElementById(tabId).classList.add("active");
-          document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add("active");
+        document
+          .querySelectorAll(".tab-content")
+          .forEach((tab) => tab.classList.remove("active"));
+        document
+          .querySelectorAll(".tab")
+          .forEach((tab) => tab.classList.remove("active"));
+        document.getElementById(tabId).classList.add("active");
+        document
+          .querySelector(`[onclick="showTab('${tabId}')"]`)
+          .classList.add("active");
 
-          if (tabId === 'banca') {
-              loadBanca();
-          }
-
-          if (tabId === 'notas') {
-            loadNotas();
+        if (tabId === "banca") {
+          loadBanca();
         }
 
-        if (tabId === 'reunioes') {
-            loadReunioesAluno();
+        if (tabId === "notas") {
+          loadNotas();
         }
 
-        if (tabId === 'alertas') {
-    loadAlertas();
-}
+        if (tabId === "reunioes") {
+          loadReunioesAluno();
+        }
 
-if (tabId === 'upload') enviarUpload();
+        if (tabId === "alertas") {
+          loadAlertas();
+        }
+
+        if (tabId === "upload") enviarUpload();
       }
 
       const fotoInput = document.getElementById("fotoInput");
       const fotoAluno = document.getElementById("fotoAluno");
 
       fotoInput.addEventListener("change", function () {
-          const file = this.files[0];
-          if (file) {
-              const reader = new FileReader();
-              reader.onload = function (e) {
-                  fotoAluno.src = e.target.result;
-              };
-              reader.readAsDataURL(file);
-          }
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            fotoAluno.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
       });
 
       let todosProfessores = [];
 
       window.addEventListener("DOMContentLoaded", async () => {
-          const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+        const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
 
-          if (!usuario) {
-              alert("Usuário não logado!");
-              window.location.href = "login.html";
-              return;
-          }
+        if (!usuario) {
+          alert("Usuário não logado!");
+          window.location.href = "login.html";
+          return;
+        }
 
-          if (usuario) {
-        // Carrega a lista de uploads na inicialização
-        carregarUploads(usuario.id);
-    }
+        if (usuario) {
+          // Carrega a lista de uploads na inicialização
+          carregarUploads(usuario.id);
+        }
 
-          document.getElementById("nomeHeader").textContent = usuario.nome;
-          document.getElementById("nomeAluno").textContent = usuario.nome;
-          document.getElementById("dataNascimento").textContent = usuario.data_nascimento;
-          document.getElementById("contato").textContent = usuario.contato;
-          document.getElementById("cpf").textContent = usuario.cpf;
-          document.getElementById("rg").textContent = usuario.rg;
-          document.getElementById("cidade").textContent = usuario.cidade;
-          document.getElementById("endereco").textContent = usuario.endereco;
-          document.getElementById("estadoCivil").textContent = usuario.estado_civil;
-          document.getElementById("sexo").textContent = usuario.sexo;
-          document.getElementById("nomePai").textContent = usuario.nome_pai;
-          document.getElementById("nomeMae").textContent = usuario.nome_mae;
+        document.getElementById("nomeHeader").textContent = usuario.nome;
+        document.getElementById("nomeAluno").textContent = usuario.nome;
+        const dataOriginal = usuario.data_nascimento;
+        const dataFormatada = new Date(dataOriginal).toLocaleDateString(
+          "pt-BR",
+          { timeZone: "UTC" }
+        );
+        document.getElementById("dataNascimento").textContent = dataFormatada;
+        document.getElementById("contato").textContent = usuario.contato;
+        document.getElementById("cpf").textContent = usuario.cpf;
+        document.getElementById("rg").textContent = usuario.rg;
+        document.getElementById("cidade").textContent = usuario.cidade;
+        document.getElementById("endereco").textContent = usuario.endereco;
+        document.getElementById("estadoCivil").textContent =
+          usuario.estado_civil;
+        document.getElementById("sexo").textContent = usuario.sexo;
+        document.getElementById("nomePai").textContent = usuario.nome_pai;
+        document.getElementById("nomeMae").textContent = usuario.nome_mae;
 
-          if (usuario.foto) {
-              document.getElementById("fotoAluno").src = usuario.foto;
-          }
+        if (usuario.foto) {
+          document.getElementById("fotoAluno").src = usuario.foto;
+        }
 
-          await loadAllProfessores();
+        await loadAllProfessores();
       });
 
       async function loadAllProfessores() {
         try {
-            const response = await fetch("http://localhost:3000/api/professores");
-            todosProfessores = await response.json();
+          const response = await fetch("http://localhost:3000/api/professores");
+          todosProfessores = await response.json();
         } catch (error) {
-            console.error("Erro ao carregar todos os professores:", error);
+          console.error("Erro ao carregar todos os professores:", error);
         }
-    }
+      }
 
       function getProfessorNameById(id) {
-          const prof = todosProfessores.find(p => p.id == id);
-          return prof ? prof.nome : 'Professor não encontrado';
+        const prof = todosProfessores.find((p) => p.id == id);
+        return prof ? prof.nome : "Professor não encontrado";
       }
 
       let bancaProfessores = {};
 
-  async function loadBanca() {
-    const bancaInfo = document.getElementById('banca-info');
-    bancaInfo.innerHTML = '';
+      async function loadBanca() {
+        const bancaInfo = document.getElementById("banca-info");
+        bancaInfo.innerHTML = "<p>Carregando informações da banca...</p>";
 
-    const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
-    if (!usuario) {
-        bancaInfo.innerHTML = '<p class="aviso-banca">Usuário não logado. Faça o login para ver a banca.</p>';
-        return;
-    }
+        const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+        if (!usuario) {
+          bancaInfo.innerHTML =
+            '<p class="aviso-banca">Usuário não logado. Faça o login para ver a banca.</p>';
+          return;
+        }
 
-    try {
-        const response = await fetch(`http://localhost:3000/api/bancas/${usuario.id}`);
-        const banca = await response.json();
+        try {
+          const response = await fetch(
+            `http://localhost:3000/api/bancas/${usuario.id}`
+          );
+          const banca = await response.json();
 
-        if (response.ok) {
+          if (response.ok) {
+            bancaInfo.innerHTML = "";
+
             const prof1Nome = getProfessorNameById(banca.professor1_id);
             const prof2Nome = getProfessorNameById(banca.professor2_id);
             const prof3Nome = getProfessorNameById(banca.professor3_id);
 
             const professoresBanca = [
-                { nome: prof1Nome, funcao: 'Professor(a) 1' },
-                { nome: prof2Nome, funcao: 'Professor(a) 2' },
-                { nome: prof3Nome, funcao: 'Orientador(a)' } 
+              { nome: prof3Nome, funcao: "Orientador(a)" },
+              { nome: prof1Nome, funcao: "Professor(a) 1" },
+              { nome: prof2Nome, funcao: "Professor(a) 2" },
             ];
 
-            professoresBanca.forEach(professor => {
-                const li = document.createElement('li');
-                li.innerHTML = `<strong>${professor.funcao}:</strong> ${professor.nome}`;
-                bancaInfo.appendChild(li);
+            const userIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg>`;
+
+            const container = document.createElement("div");
+            container.className = "banca-container";
+
+            professoresBanca.forEach((professor) => {
+              const card = document.createElement("div");
+              card.className = "banca-card";
+              card.innerHTML = `
+          <div class="banca-icon">
+              <img src="../images/professor.png" alt="Ícone do Professor" />
+          </div>
+          <div class="banca-texto">
+              <span class="banca-funcao">${professor.funcao}</span>
+              <span class="banca-nome">${professor.nome}</span>
+          </div>
+        `;
+              container.appendChild(card);
             });
-        } else {
-            const aviso = document.createElement('p');
-            aviso.textContent = banca.error;
-            aviso.classList.add('aviso-banca');
-            bancaInfo.appendChild(aviso);
+            bancaInfo.appendChild(container);
+          } else {
+            bancaInfo.innerHTML = `<p class="aviso-banca">${banca.error}</p>`;
+          }
+        } catch (error) {
+          console.error("Erro ao carregar a banca:", error);
+          bancaInfo.innerHTML =
+            '<p class="aviso-banca">Erro ao carregar a banca. Tente novamente mais tarde.</p>';
         }
-    } catch (error) {
-        console.error("Erro ao carregar a banca:", error);
-        const aviso = document.createElement('p');
-        aviso.textContent = 'Erro ao carregar a banca. Tente novamente mais tarde.';
-        aviso.classList.add('aviso-banca');
-        bancaInfo.appendChild(aviso);
-    }
-}
+      }
 
-          async function loadNotas() {
-          const notasInfo = document.getElementById('notas-info');
-          notasInfo.innerHTML = '<p>Buscando notas...</p>';
-        
-          const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
-        
-          if (!usuario || !usuario.id) {
-              notasInfo.innerHTML = '<p class="aviso-banca">Usuário não logado ou ID não encontrado.</p>';
-              return;
+      async function loadNotas() {
+        const notasInfo = document.getElementById("notas-info");
+        notasInfo.innerHTML = "<p>Buscando notas...</p>";
+
+        const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+
+        if (!usuario || !usuario.id) {
+          notasInfo.innerHTML =
+            '<p class="aviso-banca">Usuário não logado ou ID não encontrado.</p>';
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            `http://localhost:3000/api/notas/${usuario.id}`
+          );
+
+          if (!response.ok) {
+            notasInfo.innerHTML =
+              '<p class="aviso-banca">Não foi possível carregar as notas. Tente novamente.</p>';
+            return;
           }
-        
-          try {
-              const response = await fetch(`http://localhost:3000/api/notas/${usuario.id}`);
-          
-              if (!response.ok) {
-                  notasInfo.innerHTML = '<p class="aviso-banca">Não foi possível carregar as notas. Tente novamente.</p>';
-                  return;
+
+          const notas = await response.json();
+
+          if (notas && notas.length > 0) {
+            const notasAgrupadas = notas.reduce((acc, nota) => {
+              const [criterioPrincipal] = nota.criterio.split("_");
+              if (!acc[criterioPrincipal]) {
+                acc[criterioPrincipal] = [];
+              }
+              acc[criterioPrincipal].push(nota);
+              return acc;
+            }, {});
+
+            let htmlContent = "<h4>Avaliações Detalhadas:</h4>";
+
+            for (const criterio in notasAgrupadas) {
+              const notasDoCriterio = notasAgrupadas[criterio];
+
+              const nomeCriterio =
+                {
+                  proposta: "Proposta",
+                  reelaboracao: "Reelaboração",
+                  tc: "Trabalho de Conclusão",
+                }[criterio] || criterio;
+
+              htmlContent += `<div class="avaliacao-container">`;
+              htmlContent += `<h5>${nomeCriterio}</h5>`;
+
+              const notasPorProfessor = notasDoCriterio.reduce((acc, nota) => {
+                if (!acc[nota.professor_nome]) {
+                  acc[nota.professor_nome] = [];
+                }
+                acc[nota.professor_nome].push(nota);
+                return acc;
+              }, {});
+
+              for (const professor in notasPorProfessor) {
+                htmlContent += `<h6>Professor(a) ${professor}</h6>`;
+                htmlContent += `<ul>`;
+
+                notasPorProfessor[professor].forEach((nota) => {
+                  const nomeSubCriterio = nota.criterio
+                    .split("_")
+                    .slice(1)
+                    .join(" ")
+                    .replace(/\b\w/g, (l) => l.toUpperCase());
+                  htmlContent += `<li><strong>${nomeSubCriterio}:</strong> ${
+                    nota.nota
+                  } (Lançada em: ${new Date(
+                    nota.data_lancamento
+                  ).toLocaleDateString()})</li>`;
+                });
+                htmlContent += `</ul>`;
               }
 
-              const notas = await response.json();
-          
-              if (notas && notas.length > 0) {
-                  const notasAgrupadas = notas.reduce((acc, nota) => {
-                      const [criterioPrincipal] = nota.criterio.split('_');
-                      if (!acc[criterioPrincipal]) {
-                          acc[criterioPrincipal] = [];
-                      }
-                      acc[criterioPrincipal].push(nota);
-                      return acc;
-                  }, {});
+              htmlContent += `</div>`;
+            }
 
-                  let htmlContent = '<h4>Avaliações Detalhadas:</h4>';
-
-                  for (const criterio in notasAgrupadas) {
-                      const notasDoCriterio = notasAgrupadas[criterio];
-
-                      const nomeCriterio = {
-                          'proposta': 'Proposta',
-                          'reelaboracao': 'Reelaboração',
-                          'tc': 'Trabalho de Conclusão'
-                      }[criterio] || criterio;
-
-                      htmlContent += `<div class="avaliacao-container">`;
-                      htmlContent += `<h5>${nomeCriterio}</h5>`;
-                      
-                      const notasPorProfessor = notasDoCriterio.reduce((acc, nota) => {
-                          if (!acc[nota.professor_nome]) {
-                              acc[nota.professor_nome] = [];
-                          }
-                          acc[nota.professor_nome].push(nota);
-                          return acc;
-                      }, {});
-
-                      for (const professor in notasPorProfessor) {
-                          htmlContent += `<h6>Professor(a) ${professor}</h6>`;
-                          htmlContent += `<ul>`;
-                          
-                          notasPorProfessor[professor].forEach(nota => {
-                              const nomeSubCriterio = nota.criterio.split('_').slice(1).join(' ').replace(/\b\w/g, l => l.toUpperCase());
-                              htmlContent += `<li><strong>${nomeSubCriterio}:</strong> ${nota.nota} (Lançada em: ${new Date(nota.data_lancamento).toLocaleDateString()})</li>`;
-                          });
-                          htmlContent += `</ul>`;
-                      }
-
-                      htmlContent += `</div>`;
-                  }
-
-                  notasInfo.innerHTML = htmlContent;
-              } else {
-                  notasInfo.innerHTML = '<p class="aviso-banca">Nenhuma nota foi lançada ainda.</p>';
-              }
-          } catch (error) {
-              console.error("Erro ao carregar as notas:", error);
-              notasInfo.innerHTML = '<p class="aviso-banca">Erro ao carregar notas. Verifique a conexão com o servidor.</p>';
+            notasInfo.innerHTML = htmlContent;
+          } else {
+            notasInfo.innerHTML =
+              '<p class="aviso-banca">Nenhuma nota foi lançada ainda.</p>';
           }
+        } catch (error) {
+          console.error("Erro ao carregar as notas:", error);
+          notasInfo.innerHTML =
+            '<p class="aviso-banca">Erro ao carregar notas. Verifique a conexão com o servidor.</p>';
+        }
       }
 
       async function loadReunioesAluno() {
-    const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
-    const listaReunioes = document.getElementById("listaReunioesAluno");
-    const listaDocumentos = document.getElementById("listaDocumentosAluno");
+        const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+        // Agora usamos apenas uma lista
+        const listaReunioes = document.getElementById("listaReunioesAluno");
 
-    listaReunioes.innerHTML = "<li>Carregando...</li>";
-    listaDocumentos.innerHTML = "";
+        listaReunioes.innerHTML = "<li>Carregando...</li>";
 
-    try {
-        const response = await fetch(`http://localhost:3000/api/reunioes/aluno/${usuario.id}`);
-        const reunioes = await response.json();
+        try {
+          const response = await fetch(
+            `http://localhost:3000/api/reunioes/aluno/${usuario.id}`
+          );
+          const reunioes = await response.json();
 
-        listaReunioes.innerHTML = "";
-        if (reunioes.length === 0) {
+          listaReunioes.innerHTML = "";
+          if (reunioes.length === 0) {
             listaReunioes.innerHTML = "<li>Nenhuma reunião registrada.</li>";
             return;
-        }
+          }
 
-        reunioes.forEach(r => {
+          reunioes.forEach((r) => {
+            // 1. Cria um ÚNICO item de lista para a reunião inteira
             const li = document.createElement("li");
-            li.innerHTML = `<strong>${r.data} ${r.hora}</strong> - ${r.professor_nome} - ${r.descricao || "Sem descrição"}`;
-            listaReunioes.appendChild(li);
 
+            const dataFormatada = new Date(r.data).toLocaleDateString("pt-BR", {
+              timeZone: "UTC",
+            });
+
+            // 2. Prepara o link do documento, se ele existir
+            let docLink = "";
             if (r.documento) {
-                const docLi = document.createElement("li");
-                docLi.innerHTML = `<a href="http://localhost:3000/uploads/${r.documento}" target="_blank">${r.documento}</a>`;
-                listaDocumentos.appendChild(docLi);
+              docLink = `<a class="documento-link" href="http://localhost:3000/uploads/${r.documento}" target="_blank" rel="noopener noreferrer">Abrir Documento</a>`;
             }
-        });
-    } catch (error) {
-        console.error("Erro ao carregar reuniões do aluno:", error);
-        listaReunioes.innerHTML = "<li>Erro ao carregar reuniões.</li>";
-    }
-}
+
+            // 3. Combina as informações e o link dentro do mesmo <li>
+            li.innerHTML = `
+        <div class="reuniao-info">
+            <strong>${dataFormatada} ${r.hora || ""}</strong> - Professor: ${
+              r.professor_nome
+            } 
+            <span class="observacao">(${r.descricao || "Sem descrição"})</span>
+        </div>
+        ${docLink}
+      `;
+
+            listaReunioes.appendChild(li);
+          });
+        } catch (error) {
+          console.error("Erro ao carregar reuniões do aluno:", error);
+          listaReunioes.innerHTML = "<li>Erro ao carregar reuniões.</li>";
+        }
+      }
+
       async function loadAlertas() {
-    const alertasDiv = document.getElementById('alertas');
-    alertasDiv.innerHTML = '<p>Carregando alertas...</p>';
+        const alertasDiv = document.getElementById("alertas");
+        alertasDiv.innerHTML = "<p>Carregando alertas...</p>";
 
-    const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
-    if (!usuario || !usuario.id) {
-        alertasDiv.innerHTML = '<p class="aviso-banca">Usuário não logado.</p>';
-        return;
-    }
-
-    try {
-        const response = await fetch(`http://localhost:3000/api/cronogramas/${usuario.id}`);
-        if (!response.ok) {
-            alertasDiv.innerHTML = '<p class="aviso-banca">Não foi possível carregar os alertas.</p>';
-            return;
+        const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+        if (!usuario || !usuario.id) {
+          alertasDiv.innerHTML =
+            '<p class="aviso-banca">Usuário não logado.</p>';
+          return;
         }
 
-        const cronogramas = await response.json();
-
-        if (cronogramas.length === 0) {
-            alertasDiv.innerHTML = '<p class="aviso-banca">Nenhum alerta registrado.</p>';
+        try {
+          const response = await fetch(
+            `http://localhost:3000/api/cronogramas/${usuario.id}`
+          );
+          if (!response.ok) {
+            alertasDiv.innerHTML =
+              '<p class="aviso-banca">Não foi possível carregar os alertas.</p>';
             return;
-        }
+          }
 
-        let htmlContent = '<ul>';
-        cronogramas.forEach(c => {
+          const cronogramas = await response.json();
+
+          if (cronogramas.length === 0) {
+            alertasDiv.innerHTML =
+              '<p class="aviso-banca">Nenhum alerta registrado.</p>';
+            return;
+          }
+
+          let htmlContent = "<ul>";
+          cronogramas.forEach((c) => {
             const dataEntrega = new Date(c.dataEntrega).toLocaleDateString();
-            const horaEntrega = c.horaEntrega ? c.horaEntrega : '';
-            
+            const horaEntrega = c.horaEntrega ? c.horaEntrega : "";
+
             htmlContent += `
                 <li class="alert-item alert-info">
-                    <strong>${c.tipoEntrega}</strong> - Entrega: ${dataEntrega} ${horaEntrega} 
-                    (Definido em: ${new Date(c.data_definicao).toLocaleDateString()})
+                    <strong>${
+                      c.tipoEntrega
+                    }</strong> - Entrega: ${dataEntrega} ${horaEntrega} 
+                    (Definido em: ${new Date(
+                      c.data_definicao
+                    ).toLocaleDateString()})
                 </li>
             `;
-        });
-        htmlContent += '</ul>';
+          });
+          htmlContent += "</ul>";
 
-        alertasDiv.innerHTML = htmlContent;
+          alertasDiv.innerHTML = htmlContent;
+        } catch (error) {
+          console.error("Erro ao carregar alertas:", error);
+          alertasDiv.innerHTML =
+            '<p class="aviso-banca">Erro ao carregar alertas.</p>';
+        }
+      }
 
-    } catch (error) {
-        console.error("Erro ao carregar alertas:", error);
-        alertasDiv.innerHTML = '<p class="aviso-banca">Erro ao carregar alertas.</p>';
-    }
-}
-async function enviarUpload() {
-  const arquivo = document.getElementById("documentoUpload").files[0];
-  const descricao = document.getElementById("descricaoUpload").value;
-  const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+      async function enviarUpload() {
+        const arquivo = document.getElementById("documentoUpload").files[0];
+        const descricao = document.getElementById("descricaoUpload").value;
+        const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
 
-  if (!arquivo || !descricao) {
-    alert("Selecione um documento e digite uma descrição.");
-    return;
-  }
+        if (!arquivo || !descricao) {
+          alert("Selecione um documento e digite uma descrição.");
+          return;
+        }
 
-  const formData = new FormData();
-  formData.append("alunoId", usuario.id);
-  formData.append("descricao", descricao);
-  formData.append("documento", arquivo);
+        const formData = new FormData();
+        formData.append("alunoId", usuario.id);
+        formData.append("descricao", descricao);
+        formData.append("documento", arquivo);
 
-  try {
-    const response = await fetch("http://localhost:3000/api/uploads", {
-      method: "POST",
-      body: formData
-    });
+        try {
+          const response = await fetch("http://localhost:3000/api/uploads", {
+            method: "POST",
+            body: formData,
+          });
 
-    const result = await response.json();
-    if (response.ok) {
-      alert(result.message || "Documento enviado com sucesso!");
-      document.getElementById("documentoUpload").value = '';
-      document.getElementById("descricaoUpload").value = '';
-      
-      carregarUploads(usuario.id); 
-    } else {
-      alert(`Erro ao enviar: ${result.error}`);
-    }
-  } catch (error) {
-    console.error("Erro ao enviar documento:", error);
-    alert("Não foi possível conectar ao servidor.");
-  }
-}
+          const result = await response.json();
+          if (response.ok) {
+            alert(result.message || "Documento enviado com sucesso!");
+            document.getElementById("documentoUpload").value = "";
+            document.getElementById("descricaoUpload").value = "";
+            carregarUploads(usuario.id);
+          } else {
+            alert(`Erro ao enviar: ${result.error}`);
+          }
+        } catch (error) {
+          console.error("Erro ao enviar documento:", error);
+          alert("Não foi possível conectar ao servidor.");
+        }
+      }
 
+      async function carregarUploads(alunoId) {
+        const lista = document.getElementById("listaUploads");
+        lista.innerHTML = "<li>Carregando documentos...</li>";
 
+        const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+        const idParaBuscar = alunoId || (usuario ? usuario.id : null);
 
-async function carregarUploads(alunoId) {
-  const lista = document.getElementById("listaUploads");
-  lista.innerHTML = "<li>Carregando documentos...</li>";
-  
-  const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
-  const idParaBuscar = alunoId || (usuario ? usuario.id : null);
-  
-  if (!idParaBuscar) {
-    lista.innerHTML = "<li>Erro: ID do aluno não encontrado.</li>";
-    return;
-  }
+        if (!idParaBuscar) {
+          lista.innerHTML = "<li>Erro: ID do aluno não encontrado.</li>";
+          return;
+        }
 
-  try {
-    const response = await fetch(`http://localhost:3000/api/uploads/${idParaBuscar}`);
-    const uploads = await response.json();
+        try {
+          const response = await fetch(
+            `http://localhost:3000/api/uploads/${idParaBuscar}`
+          );
+          const uploads = await response.json();
 
-    lista.innerHTML = "";
+          lista.innerHTML = "";
 
-    if (uploads.length === 0) {
-      lista.innerHTML = "<li>Nenhum documento enviado ainda.</li>";
-      return;
-    }
+          if (uploads.length === 0) {
+            lista.innerHTML = "<li>Nenhum documento enviado ainda.</li>";
+            return;
+          }
 
-    uploads.forEach(u => {
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <strong>${u.descricao}</strong> (Data: ${new Date(u.data_upload).toLocaleDateString()}) - 
-        <a href="http://localhost:3000/uploads/${u.documento}" target="_blank">Abrir Arquivo</a>
+          uploads.forEach((u) => {
+            const li = document.createElement("li");
+            li.innerHTML = `
+        <strong>${u.descricao}</strong> (Data: ${new Date(
+              u.data_upload
+            ).toLocaleDateString()}) - 
+        <a href="http://localhost:3000/uploads/${
+          u.documento
+        }" target="_blank">Abrir Arquivo</a>
       `;
-      lista.appendChild(li);
-    });
-  } catch (error) {
-    console.error("Erro ao carregar uploads:", error);
-    lista.innerHTML = "<li>Erro ao carregar documentos. Verifique a conexão com o servidor.</li>";
-  }
-}
+            lista.appendChild(li);
+          });
+        } catch (error) {
+          console.error("Erro ao carregar uploads:", error);
+          lista.innerHTML =
+            "<li>Erro ao carregar documentos. Verifique a conexão com o servidor.</li>";
+        }
+      }
 
-document.addEventListener("DOMContentLoaded", () => {
-  carregarUploads();
-});
+      document.addEventListener("DOMContentLoaded", () => {
+        carregarUploads();
+      });
     </script>
   </body>
 </html>

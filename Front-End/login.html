@@ -10,7 +10,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TC</title>
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="login.css" />
   </head>
   <body>
     <div class="card">
@@ -52,16 +52,16 @@
 
             const result = await response.json();
 
-          if (response.ok) {
+            if (response.ok) {
               localStorage.setItem(
-                  "usuarioLogado",
-                  JSON.stringify(result.usuario)
+                "usuarioLogado",
+                JSON.stringify(result.usuario)
               );
 
               if (result.usuario.tipo === "aluno") {
-                  window.location.href = "painel_pessoal.html";
+                window.location.href = "painel_pessoal.html";
               } else {
-                  window.location.href = "painel_professor.html";
+                window.location.href = "painel_professor.html";
               }
             } else {
               alert(result.error);
@@ -72,7 +72,6 @@
           }
         }
       </script>
-      <a href=""><p class="escsenha">ESQUECI MINHA SENHA</p></a>
     </div>
   </body>
 </html>

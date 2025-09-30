@@ -1,115 +1,177 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
-      body {
-        font-family: "Roboto Condensed", sans-serif;
-        font-weight: 900;
-        background-image: url(../images/unisc_fundo.jpg);
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 80vh;
-      }
+/* --- Estilos Globais e Variáveis (Consistente com os painéis) --- */
+:root {
+  --cor-primaria: #005a9c;
+  --cor-secundaria: #007bff;
+  --cor-fundo: #f4f7fa;
+  --cor-container: #ffffff;
+  --cor-texto: #333333;
+  --cor-texto-claro: #ffffff;
+  --cor-borda: #dee2e6;
+  --sombra-caixa: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --borda-raio: 8px;
+}
 
-      .container {
-        display: block;
-        align-items: center;
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-        width: 96vw;
-        margin-top: 50vh;
-      }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-      h2 {
-        text-align: center;
-        margin-bottom: 20px;
-      }
+body {
+  background-image: url("../images/unisc_fundo.jpg");
+  background-size: cover;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
 
-      .radio-group {
-        text-align: center;
-        margin-bottom: 20px;
-      }
+/* --- Container Principal --- */
+.container {
+  width: 100%;
+  max-width: 900px;
+  padding: 40px;
+  background-color: var(--cor-container);
+  border-radius: var(--borda-raio);
+  box-shadow: var(--sombra-caixa);
+}
 
-      .radio-group label {
-        font-weight: bold;
-        cursor: pointer;
-        background: #f9f9ff;
-      }
+h2 {
+  text-align: center;
+  color: var(--cor-primaria);
+  margin-bottom: 25px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
 
-      .radio-group input {
-        margin-right: 5px;
-      }
+/* --- Seleção de Tipo (Aluno/Professor) --- */
+.radio-group {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 30px;
+}
 
-      .form {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 1vw;
-        align-items: start;
-        padding: 1vw;
-        margin: 1vh;
-      }
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1em;
+  cursor: pointer;
+}
 
-      .form-left {
-        border: 1px solid #c0cfff;
-        border-radius: 10px;
-        padding: 10px;
-      }
+.radio-group input[type="radio"] {
+  accent-color: var(--cor-primaria); /* Estiliza o radio button moderno */
+  width: 18px;
+  height: 18px;
+}
 
-      .form-left label {
-        display: block;
-        font-size: 1rem;
-        font-weight: bold;
-        padding-top: 1vh;
-      }
+/* --- Layout do Formulário --- */
+.form {
+  display: flex;
+  gap: 40px;
+}
 
-      .form-left input {
-        width: 95%;
-        border: 1px solid #000;
-        border-radius: 5px;
-        height: 25px;
-      }
+.form-left {
+  flex: 2; /* Ocupa 2/3 do espaço */
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
 
-      .photo-upload {
-        border: 1px solid #c0cfff;
-        border-radius: 10px;
-        text-align: center;
-        padding: 20px;
-      }
+/* --- Estilo dos Inputs e Labels --- */
+.form-left label {
+  font-weight: 500;
+  color: #555;
+  font-size: 0.9em;
+}
 
-      .photo-upload img {
-        width: 100px;
-        height: 100px;
-        border-radius: 10px;
-        border: 2px dashed #aaa;
-        object-fit: cover;
-        cursor: pointer;
-      }
+.form-left input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--borda-raio);
+  font-size: 1em;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
 
-      .photo-upload input {
-        display: none;
-      }
+.form-left input:focus {
+  outline: none;
+  border-color: var(--cor-secundaria);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
 
-      .photo-upload p {
-        margin-top: 10px;
-        font-size: 14px;
-      }
-      .btnCadastrar {
-        display: flex;
-        justify-self: right;
-        margin-bottom: 2vh;
-        margin-right: 3vh;
-        background-color: #fff;
-        color: #000;
-        font-size: 1.2rem;
-        border: 0px solid #000;
-        border-radius: 5px;
-        cursor: pointer;
-        box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.2);
-      }
+#preview {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 4px solid var(--cor-primaria);
+  object-fit: cover;
+  margin-bottom: 15px;
+  background-color: #f8f9fa;
+  transition: transform 0.2s;
+}
 
-      .btnCadastrar:hover {
-        color: #fff;
-        background-color: #002979;
-        transition: 0.55s;
-        box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.2);
-      }
+#preview:hover {
+  transform: scale(1.05);
+}
+
+#file-input {
+  display: none; /* O input de arquivo real fica escondido */
+}
+
+.photo-upload p {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+/* --- Botão de Cadastro --- */
+.btnCadastrar {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  margin-top: 30px;
+  background-color: var(--cor-secundaria);
+  color: var(--cor-texto-claro);
+  border: none;
+  border-radius: var(--borda-raio);
+  cursor: pointer;
+  font-size: 1.1em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.btnCadastrar:hover {
+  background-color: var(--cor-primaria);
+  transform: translateY(-2px);
+}
+
+/* --- Responsividade --- */
+@media (max-width: 800px) {
+  .form {
+    flex-direction: column; /* Empilha as colunas */
+  }
+
+  .photo-upload {
+    order: -1; /* Move a seção da foto para cima no modo de coluna */
+    padding-top: 0;
+    margin-bottom: 30px;
+  }
+}
+
+@media (max-width: 500px) {
+  .container {
+    padding: 25px;
+  }
+
+  h2 {
+    font-size: 1.5em;
+  }
+}

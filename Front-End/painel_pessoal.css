@@ -1,134 +1,441 @@
-      @import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
+/* --- Estilos Globais e Reset (Consistente com o Painel do Professor) --- */
+:root {
+  --cor-primaria: #005a9c; /* Azul corporativo */
+  --cor-secundaria: #007bff; /* Azul mais vibrante para interações */
+  --cor-fundo: #f4f7fa; /* Cinza bem claro */
+  --cor-container: #ffffff; /* Branco */
+  --cor-texto: #333333; /* Cinza escuro */
+  --cor-texto-claro: #ffffff;
+  --cor-borda: #dee2e6;
+  --cor-sucesso: #28a745;
+  --cor-aviso: #ffc107;
+  --cor-info: #17a2b8;
+  --sombra-caixa: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --borda-raio: 8px;
+}
 
-      body {
-        background-image: url(../images/unisc_fundo.jpg);
-        background-size: cover;
-        font-family: "Roboto Condensed", sans-serif;
-        font-weight: 600;
-        margin: 0;
-        padding: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-      .container {
-        width: 90vw;
-        background: white;
-        border: 6px solid #0044cc;
-        border-radius: 20px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        padding: 20px;
-      }
+body {
+  background-image: url("../images/unisc_fundo.jpg");
+  background-size: cover;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
+  line-height: 1.6;
+}
 
-      .header {
-        text-align: center;
-        margin-bottom: 20px;
-      }
+.container {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 20px;
+  background-color: var(--cor-container);
+  border-radius: var(--borda-raio);
+  box-shadow: var(--sombra-caixa);
+  overflow: hidden;
+}
 
-      .header img {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        border: 2px solid #ccc;
-        cursor: pointer;
-        object-fit: cover;
-      }
+/* --- Cabeçalho (Header) --- */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--cor-borda);
+  margin-bottom: 20px;
+}
 
-      .header h2 {
-        margin: 10px 0 0 0;
-        font-size: 22px;
-        font-weight: bold;
-      }
+.header label {
+  cursor: pointer;
+}
 
-      .tabs {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        border-bottom: 2px solid #ccc;
-        margin-bottom: 20px;
-      }
+#fotoAluno {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--cor-primaria);
+  transition: transform 0.2s ease-in-out;
+}
 
-      .tab {
-        cursor: pointer;
-        font-weight: bold;
-        padding: 10px;
-        color: #333;
-      }
+#fotoAluno:hover {
+  transform: scale(1.1);
+}
 
-      .tab.active {
-        color: #0044cc;
-        border-bottom: 3px solid #0044cc;
-      }
+#nomeHeader {
+  font-size: 1.8em;
+  color: var(--cor-primaria);
+  font-weight: 600;
+  margin: 0;
+}
 
-      .tab-content {
-        display: none;
-      }
+/* --- Abas de Navegação (Tabs) --- */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  border-bottom: 1px solid var(--cor-borda);
+  margin-bottom: 25px;
+}
 
-      .tab-content.active {
-        display: block;
-        padding: 10px;
-      }
+.tab {
+  padding: 12px 20px;
+  cursor: pointer;
+  background-color: #f8f9fa;
+  border: 1px solid var(--cor-borda);
+  border-bottom: none;
+  border-radius: var(--borda-raio) var(--borda-raio) 0 0;
+  font-weight: 500;
+  color: var(--cor-secundaria);
+  transition: background-color 0.3s, color 0.3s;
+}
 
-      .dados-lista p {
-        margin: 5px 0;
-      }
+.tab:hover {
+  background-color: #e9ecef;
+}
 
-      .alert-item {
-        padding: 15px;
-        margin-bottom: 10px;
-        border-left-width: 5px;
-        border-left-style: solid;
-        border-radius: 5px;
-        background-color: #f8f9fa;
-        list-style-type: none;
-      }
+.tab.active {
+  background-color: var(--cor-container);
+  border-bottom: 1px solid var(--cor-container);
+  color: var(--cor-primaria);
+  position: relative;
+  top: 1px;
+}
 
-      .alert-item strong {
-          font-size: 1.1em;
-      }
-      
-      .alert-danger {
-          border-left-color: #dc3545;
-          color: #721c24;
-          background-color: #f8d7da;
-      }
+/* --- Conteúdo das Abas (Tab Content) --- */
+.tab-content {
+  display: none;
+  animation: fadeIn 0.5s;
+}
 
-      .alert-warning {
-          border-left-color: #ffc107;
-          color: #856404;
-          background-color: #fff3cd;
-      }
+.tab-content.active {
+  display: block;
+  padding-left: 25px;
+}
 
-      .alert-info {
-          border-left-color: #17a2b8;
-          color: #0c5460;
-          background-color: #d1ecf1;
-      }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 
-      .avaliacao-container {
-          border: 1px solid #eee;
-          padding: 15px;
-          margin-bottom: 20px;
-          border-radius: 8px;
-          background-color: #f9f9f9;
-      }
+/* --- Estilos Gerais de Conteúdo (Títulos, Formulários, Listas) --- */
+h3,
+h4 {
+  color: var(--cor-primaria);
+  margin-bottom: 15px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--cor-borda);
+}
 
-      .avaliacao-container h5 {
-          color: #0044cc;
-          border-bottom: 2px solid #ccc;
-          padding-bottom: 5px;
-          margin-top: 0;
-      }
+h4 {
+  font-size: 1.1em;
+  margin-top: 25px;
+}
 
-      .avaliacao-container h6 {
-          color: #555;
-          font-size: 1em;
-          margin: 10px 0 5px 0;
-      }
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+  background-color: #fdfdfd;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--borda-raio);
+  margin-bottom: 25px;
+}
 
-      .avaliacao-container ul {
-          list-style: none;
-          padding-left: 10px;
-          margin-top: 0;
-      }
+label {
+  font-weight: 600;
+  color: #555;
+}
+
+input[type="text"],
+input[type="file"],
+button {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--borda-raio);
+  font-size: 1em;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="file"]:focus {
+  outline: none;
+  border-color: var(--cor-secundaria);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+button {
+  background-color: var(--cor-secundaria);
+  color: var(--cor-texto-claro);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: var(--cor-primaria);
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul li {
+  padding: 15px;
+  border-bottom: 1px solid var(--cor-borda);
+  transition: background-color 0.2s;
+}
+
+ul li:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+ul li:hover {
+  background-color: #e9ecef;
+}
+
+ul li:last-child {
+  border-bottom: none;
+}
+
+ul li a {
+  color: var(--cor-secundaria);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+ul li a:hover {
+  text-decoration: underline;
+}
+
+/* --- Estilos Específicos do Portal do Aluno --- */
+
+/* Aba: DADOS PESSOAIS */
+.dados-lista {
+  display: grid;
+  grid-template-columns: auto 1fr; /* Coluna 1 do tamanho do conteúdo, Coluna 2 preenche o resto */
+  gap: 12px 20px; /* Espaçamento entre linhas e colunas */
+  padding: 15px;
+}
+.dados-lista p {
+  display: contents; /* Permite que os filhos (strong, span) participem do grid */
+}
+.dados-lista p strong {
+  font-weight: 600;
+  color: #555;
+}
+.dados-lista p span {
+  color: var(--cor-texto);
+}
+
+/* Aba: BANCA e AVISOS GERAIS */
+#banca-info {
+  padding: 10px 0;
+}
+
+.aviso-banca {
+  background-color: rgba(255, 193, 7, 0.1);
+  border-left: 4px solid var(--cor-aviso);
+  padding: 15px;
+  margin-top: 10px;
+  border-radius: 4px;
+}
+
+/* Aba: VISUALIZAR NOTAS */
+.avaliacao-container {
+  background-color: #fdfdfd;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--borda-raio);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+#notas-info h5,
+#notas-info h6 {
+  color: var(--cor-primaria);
+  margin-bottom: 10px;
+}
+#notas-info h6 {
+  color: #555;
+  font-size: 1em;
+  border-bottom: 1px dashed var(--cor-borda);
+  padding-bottom: 5px;
+}
+#notas-info ul {
+  padding-left: 20px;
+  margin-top: 10px;
+}
+#notas-info ul li {
+  padding: 8px;
+  border: none;
+  list-style-type: disc;
+}
+#notas-info ul li:nth-child(even) {
+  background-color: transparent;
+}
+#notas-info ul li:hover {
+  background-color: #f8f9fa;
+}
+
+/* Aba: VISUALIZAR ALERTAS */
+.alert-item {
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: var(--borda-raio);
+}
+.alert-info {
+  background-color: rgba(23, 162, 184, 0.1);
+  border-left: 4px solid var(--cor-info);
+  color: #0c5460;
+}
+
+/* --- Responsividade --- */
+@media (max-width: 768px) {
+  .container {
+    margin: 15px;
+    padding: 15px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .tabs {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .tab {
+    border-radius: var(--borda-raio);
+    border: 1px solid var(--cor-borda);
+    margin-bottom: 5px;
+  }
+
+  .tab.active {
+    background-color: var(--cor-primaria);
+    color: var(--cor-texto-claro);
+  }
+
+  .dados-lista {
+    grid-template-columns: 1fr; /* Coluna única em telas menores */
+    gap: 10px;
+  }
+  .dados-lista p strong {
+    margin-bottom: 2px;
+  }
+}
+
+/* --- Adicione este bloco para separar os grupos de notas --- */
+
+/* Seleciona cada 3º item da lista de notas e adiciona um separador, 
+   exceto se for o último item da lista. */
+#notas-info ul li:nth-child(3n):not(:last-child) {
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+  border-bottom: 1px dashed var(--cor-borda);
+}
+
+/* --- Adicione ao final do seu arquivo painel_pessoal.css --- */
+
+/* Aba: MINHA BANCA (Layout de Cartões) */
+.banca-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.banca-card {
+  display: flex;
+  align-items: center;
+  background-color: #f8f9fa;
+  border: 1px solid var(--cor-borda);
+  border-left: 5px solid var(--cor-primaria); /* Destaque na lateral */
+  padding: 20px;
+  border-radius: var(--borda-raio);
+  transition: all 0.3s ease;
+}
+
+.banca-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--sombra-caixa);
+  border-left-color: var(--cor-secundaria);
+}
+
+.banca-icon {
+  margin-right: 15px;
+}
+
+.banca-icon img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%; /* Opcional: Deixa a imagem do ícone redonda, fica ótimo */
+  object-fit: cover; /* Garante que a imagem preencha o espaço sem distorcer */
+}
+
+.banca-texto {
+  display: flex;
+  flex-direction: column;
+}
+
+.banca-funcao {
+  font-size: 0.9em;
+  color: #6c757d;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.banca-nome {
+  font-size: 1.3em;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+/* --- Adicione ao final do seu arquivo CSS --- */
+
+/* Aba: MINHAS REUNIÕES (Alinhamento corrigido) */
+#listaReunioesAluno li {
+  display: flex; /* Ativa o layout flexível */
+  justify-content: space-between; /* Alinha os itens nas extremidades (esquerda e direita) */
+  align-items: center; /* Centraliza os itens verticalmente na mesma linha */
+  flex-wrap: wrap; /* Permite que quebre a linha em telas pequenas */
+  gap: 15px; /* Espaçamento entre os itens */
+}
+
+/* Garante que o texto da reunião ocupe o espaço necessário à esquerda */
+.reuniao-info {
+  flex-grow: 1;
+}
+
+.observacao {
+  font-style: italic;
+  color: #6c757d;
+  font-size: 0.9em;
+  margin-left: 4px;
+}
+
+/* Estilo para o link "Abrir Documento" */
+.documento-link {
+  color: var(--cor-secundaria);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.documento-link:hover {
+  text-decoration: underline;
+}

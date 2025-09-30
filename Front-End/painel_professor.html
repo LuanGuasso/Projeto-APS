@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Painel do Professor</title>
-    <link rel="stylesheet" href="painel_professor.css">
+    <link rel="stylesheet" href="painel_professor.css" />
   </head>
   <body>
     <div class="container">
@@ -12,7 +12,7 @@
         <label for="fotoInput">
           <img
             id="fotoUsuario"
-            src="https://via.placeholder.com/80"
+            src="../images/professor.png"
             alt="Foto do Usuário"
           />
         </label>
@@ -36,9 +36,7 @@
         <div class="tab active" onclick="showTab('gerenciar_alunos')">
           Gerenciar Alunos
         </div>
-        <div class="tab" onclick="showTab('definir_banca')">
-          Definir Banca
-        </div>
+        <div class="tab" onclick="showTab('definir_banca')">Definir Banca</div>
         <div class="tab" onclick="showTab('gerenciar_professores')">
           Gerenciar Professores
         </div>
@@ -71,19 +69,6 @@
         </div>
         <h4>Alunos Matriculados:</h4>
         <ul id="listaAlunosMatriculados"></ul>
-        <div class="form-section">
-          <label for="alunoSelecionado">Definir Aluno:</label>
-          <select id="alunoSelecionado">
-            <option value="">Selecione um aluno</option>
-          </select>
-          <label for="orientadorSelecionado">Orientador:</label>
-          <select id="orientadorSelecionado">
-            <option value="">Selecione um professor</option>
-          </select>
-          <button onclick="definirOrientador()">
-            Definir Relação Aluno/Orientador
-          </button>
-        </div>
       </div>
 
       <div id="definir_banca" class="tab-content coordenador-only">
@@ -141,46 +126,43 @@
           <label for="criterioNota">Critério de Avaliação:</label>
           <select id="criterioNota">
             <option value="proposta">Proposta</option>
-            <option value="reelaboracao_proposta">
-              Reelaboração Proposta
-            </option>
+            <option value="reelaboracao_proposta">Reelaboração Proposta</option>
             <option value="tc">Trabalho de Conclusão (TC)</option>
             <option value="reelaboracao_tc">Reelaboração de TC</option>
           </select>
           <div id="notasPorCriterio"></div>
           <button onclick="lancarNotas()">Lançar Notas</button>
         </div>
-        </div>
+      </div>
 
       <div id="cronograma" class="tab-content coordenador-only">
-  <h3>Definição do Cronograma de Entregas (Coordenador)</h3>
-  <div class="form-section">
-    <label for="alunoCronograma">Aluno:</label>
-    <select id="alunoCronograma">
-      <option value="">Selecione um aluno</option>
-    </select>
+        <h3>Definição do Cronograma de Entregas (Coordenador)</h3>
+        <div class="form-section">
+          <label for="alunoCronograma">Aluno:</label>
+          <select id="alunoCronograma">
+            <option value="">Selecione um aluno</option>
+          </select>
 
-    <label for="tipoEntregaCronograma">Tipo de Entrega:</label>
-    <select id="tipoEntregaCronograma">
-      <option value="proposta">Proposta</option>
-      <option value="reelaboracao_proposta">Reelaboração Proposta</option>
-      <option value="tc">Trabalho de Conclusão (TC)</option>
-      <option value="reelaboracao_tc">Reelaboração de TC</option>
-    </select>
+          <label for="tipoEntregaCronograma">Tipo de Entrega:</label>
+          <select id="tipoEntregaCronograma">
+            <option value="proposta">Proposta</option>
+            <option value="reelaboracao_proposta">Reelaboração Proposta</option>
+            <option value="tc">Trabalho de Conclusão (TC)</option>
+            <option value="reelaboracao_tc">Reelaboração de TC</option>
+          </select>
 
-    <label for="dataEntregaCronograma">Data de Entrega:</label>
-    <input type="date" id="dataEntregaCronograma" />
+          <label for="dataEntregaCronograma">Data de Entrega:</label>
+          <input type="date" id="dataEntregaCronograma" />
 
-    <label for="horaEntregaCronograma">Horário de Entrega:</label>
-    <input type="time" id="horaEntregaCronograma" />
+          <label for="horaEntregaCronograma">Horário de Entrega:</label>
+          <input type="time" id="horaEntregaCronograma" />
 
-    <button onclick="definirCronograma()">Definir Prazo</button>
-  </div>
+          <button onclick="definirCronograma()">Definir Prazo</button>
+        </div>
 
-  <h4>Cronogramas Definidos:</h4>
-  <ul id="listaCronogramas"></ul>
-</div>
-
+        <h4>Cronogramas Definidos:</h4>
+        <ul id="listaCronogramas"></ul>
+      </div>
 
       <div id="reunioes" class="tab-content">
         <h3>Registro de Reuniões de Orientação</h3>
@@ -208,525 +190,614 @@
       </div>
 
       <div id="prazos_alertas" class="tab-content">
-        <h3>Controle de Prazos e Tempos de Avaliação</h3>
-        
+               
+        <h3>Controle de Prazos e Tempos de Avaliação</h3>
+               
         <div class="form-section">
-          <h3>Documentos Enviados pelos Alunos:</h3>
-          <div id="documentosEnviados">
-            <p>Carregando documentos...</p>
-          </div>
-        </div>
+                   
+          <h3>Documentos Enviados pelos Alunos:</h3>
+                   
+          <div id="documentosEnviados">
+                       
+            <p>Carregando documentos...</p>
+                     
+          </div>
+                 
+        </div>
 
-        <div class="form-section">
-          <p><strong>Prazos de Entrega Definidos:</strong></p>
-          <ul id="listaPrazosEntrega"></ul>
-        </div>
-        
-        <div class="form-section">
-          <h3>Alertas de Atraso</h3>
-          <div id="alertasAtraso">
-            <p>Alertas de atraso aparecerão aqui.</p>
-          </div>
-        </div>
-      </div>
+               
+        <div class="form-section">
+                   
+          <p><strong>Prazos de Entrega Definidos:</strong></p>
+                   
+          <ul id="listaPrazosEntrega"></ul>
+                 
+        </div>
+                       
+        <div class="form-section">
+                   
+          <h3>Alertas de Atraso</h3>
+                   
+          <div id="alertasAtraso">
+                       
+            <p>Alertas de atraso aparecerão aqui.</p>
+                     
+          </div>
+                 
+        </div>
+             
+      </div>
     </div>
     <script>
-    function showTab(tabId) {
+      function showTab(tabId) {
         document.querySelectorAll(".tab-content").forEach((tab) => {
-        tab.classList.remove("active");
-    });
-    document.querySelectorAll(".tab").forEach((tab) => {
-        tab.classList.remove("active");
-    });
-    const activeTab = document.getElementById(tabId);
-    activeTab.classList.add("active");
-    document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add("active");
+          tab.classList.remove("active");
+        });
+        document.querySelectorAll(".tab").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+        const activeTab = document.getElementById(tabId);
+        activeTab.classList.add("active");
+        document
+          .querySelector(`[onclick="showTab('${tabId}')"]`)
+          .classList.add("active");
 
-    toggleCoordenadorFeatures(tabId);
-    }
+        toggleCoordenadorFeatures(tabId);
+      }
 
-    function toggleCoordenadorFeatures(tabId) {
-    const isCoordenador = document.getElementById("checkboxCoordenador").checked 
-        || (usuarioLogado && usuarioLogado.tipo === "coordenador");
+      function toggleCoordenadorFeatures(tabId) {
+        const isCoordenador =
+          document.getElementById("checkboxCoordenador").checked ||
+          (usuarioLogado && usuarioLogado.tipo === "coordenador");
 
-    document.querySelectorAll(".coordenador-only").forEach((el) => {
-        if (isCoordenador && el.id === tabId) {
+        document.querySelectorAll(".coordenador-only").forEach((el) => {
+          if (isCoordenador && el.id === tabId) {
             el.style.display = "block";
-        } else {
+          } else {
             el.style.display = "none";
+          }
+        });
+
+        if (isCoordenador) {
+          document.querySelector(".user-role").textContent = "Coordenador";
+        } else {
+          document.querySelector(".user-role").textContent = "Professor";
         }
-    });
+      }
 
-    if (isCoordenador) {
-        document.querySelector(".user-role").textContent = "Coordenador";
-    } else {
-        document.querySelector(".user-role").textContent = "Professor";
-    }
-}
-
-
-    const fotoInput = document.getElementById("fotoInput");
-    const fotoUsuario = document.getElementById("fotoUsuario");
-    fotoInput.addEventListener("change", function () {
+      const fotoInput = document.getElementById("fotoInput");
+      const fotoUsuario = document.getElementById("fotoUsuario");
+      fotoInput.addEventListener("change", function () {
         const file = this.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                fotoUsuario.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            fotoUsuario.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
         }
-    });
+      });
 
-    const usuarioLogado = JSON.parse(localStorage.getItem("usuarioLogado"));
+      const usuarioLogado = JSON.parse(localStorage.getItem("usuarioLogado"));
 
-    document.addEventListener("DOMContentLoaded", () => {
+      document.addEventListener("DOMContentLoaded", () => {
         if (!usuarioLogado) {
-            alert("Usuário não logado!");
-            window.location.href = "login.html";
-            return;
+          alert("Usuário não logado!");
+          window.location.href = "login.html";
+          return;
         }
 
         document.getElementById("nomeHeader").textContent = usuarioLogado.nome;
         if (usuarioLogado.foto) {
-            document.getElementById("fotoUsuario").src = usuarioLogado.foto;
+          document.getElementById("fotoUsuario").src = usuarioLogado.foto;
         }
 
-        if (usuarioLogado.tipo === "coordenador" || usuarioLogado.eh_coordenador) {
-            document.getElementById("checkboxCoordenador").checked = true;
-            document.querySelector(".user-role").textContent = "Coordenador";
+        if (
+          usuarioLogado.tipo === "coordenador" ||
+          usuarioLogado.eh_coordenador
+        ) {
+          document.getElementById("checkboxCoordenador").checked = true;
+          document.querySelector(".user-role").textContent = "Coordenador";
         }
 
         loadProfessorFeatures();
         toggleCoordenadorFeatures(false);
         loadDataForTabs();
-    });
+      });
 
-    document.getElementById("checkboxCoordenador").addEventListener("change", async function () {
-        const isCoordenador = this.checked;
-        const novoTipo = isCoordenador ? "coordenador" : "professor";
+      document
+        .getElementById("checkboxCoordenador")
+        .addEventListener("change", async function () {
+          const isCoordenador = this.checked;
+          const novoTipo = isCoordenador ? "coordenador" : "professor";
 
-        try {
-            const response = await fetch("http://localhost:3000/api/atualizar-tipo", {
+          try {
+            const response = await fetch(
+              "http://localhost:3000/api/atualizar-tipo",
+              {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                  "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    id: usuarioLogado.id,
-                    tipo: novoTipo
-                })
-            });
+                  id: usuarioLogado.id,
+                  tipo: novoTipo,
+                }),
+              }
+            );
 
             const result = await response.json();
 
             if (response.ok) {
-                usuarioLogado.tipo = novoTipo;
-                localStorage.setItem("usuarioLogado", JSON.stringify(usuarioLogado));
+              usuarioLogado.tipo = novoTipo;
+              localStorage.setItem(
+                "usuarioLogado",
+                JSON.stringify(usuarioLogado)
+              );
 
-                alert(result.message);
+              alert(result.message);
             } else {
-                this.checked = !isCoordenador;
-                alert(`Erro ao atualizar: ${result.error}`);
+              this.checked = !isCoordenador;
+              alert(`Erro ao atualizar: ${result.error}`);
             }
-        } catch (error) {
+          } catch (error) {
             console.error("Erro de conexão com o servidor:", error);
             this.checked = !isCoordenador;
-            alert("Não foi possível conectar ao servidor para atualizar sua função.");
-        }
+            alert(
+              "Não foi possível conectar ao servidor para atualizar sua função."
+            );
+          }
 
-        const activeTabId = document.querySelector('.tab-content.active').id;
-        toggleCoordenadorFeatures(activeTabId === 'definir_banca');
-    });
+          const activeTabId = document.querySelector(".tab-content.active").id;
+          toggleCoordenadorFeatures(activeTabId === "definir_banca");
+        });
 
-    async function cadastrarAluno() {
+      async function cadastrarAluno() {
         const nome = document.getElementById("nomeAlunoMatriculado").value;
         const matricula = document.getElementById("matriculaAluno").value;
 
         const senha = prompt("Digite uma senha para o novo aluno:", "123456");
 
         if (!nome || !matricula || !senha) {
-            alert("Por favor, preencha o nome, a matrícula e a senha do aluno.");
-            return;
+          alert("Por favor, preencha o nome, a matrícula e a senha do aluno.");
+          return;
         }
 
         try {
-            const response = await fetch("http://localhost:3000/api/alunos", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ nome, matricula, senha }),
-            });
+          const response = await fetch("http://localhost:3000/api/alunos", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nome, matricula, senha }),
+          });
 
-            const result = await response.json();
+          const result = await response.json();
 
-            if (response.ok) {
-                alert(result.message);
-                document.getElementById("nomeAlunoMatriculado").value = "";
-                document.getElementById("matriculaAluno").value = "";
-                loadAlunosMatriculados();
-                loadAlunosForSelect();
-            } else {
-                alert(`Erro: ${result.error}`);
-            }
+          if (response.ok) {
+            alert(result.message);
+            document.getElementById("nomeAlunoMatriculado").value = "";
+            document.getElementById("matriculaAluno").value = "";
+            loadAlunosMatriculados();
+            loadAlunosForSelect();
+          } else {
+            alert(`Erro: ${result.error}`);
+          }
         } catch (error) {
-            console.error("Erro ao cadastrar aluno:", error);
-            alert("Não foi possível conectar ao servidor.");
+          console.error("Erro ao cadastrar aluno:", error);
+          alert("Não foi possível conectar ao servidor.");
         }
-    }
+      }
 
-    function definirOrientador() {
+      function definirOrientador() {
         const alunoId = document.getElementById("alunoSelecionado").value;
-        const orientadorId = document.getElementById("orientadorSelecionado").value;
+        const orientadorId = document.getElementById(
+          "orientadorSelecionado"
+        ).value;
         if (alunoId && orientadorId) {
-            console.log(`Definindo orientador ${orientadorId} para o aluno ${alunoId}`);
-            alert("Relação Aluno/Orientador definida com sucesso!");
+          console.log(
+            `Definindo orientador ${orientadorId} para o aluno ${alunoId}`
+          );
+          alert("Relação Aluno/Orientador definida com sucesso!");
         } else {
-            alert("Por favor, selecione um aluno e um orientador.");
+          alert("Por favor, selecione um aluno e um orientador.");
         }
-    }
+      }
 
-    async function cadastrarProfessor() {
+      async function cadastrarProfessor() {
         const nome = document.getElementById("nomeProfessor").value;
         const disciplina = document.getElementById("disciplinaProfessor").value;
-        const senha = prompt("Digite uma senha para o novo professor:", "123456");
+        const senha = prompt(
+          "Digite uma senha para o novo professor:",
+          "123456"
+        );
 
         if (!nome || !disciplina || !senha) {
-            alert("Por favor, preencha o nome, a disciplina e a senha do professor.");
-            return;
+          alert(
+            "Por favor, preencha o nome, a disciplina e a senha do professor."
+          );
+          return;
         }
 
         try {
-            const response = await fetch("http://localhost:3000/api/professores", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ nome, disciplina, senha }),
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                alert(result.message);
-                document.getElementById("nomeProfessor").value = "";
-                document.getElementById("disciplinaProfessor").value = "";
-                loadProfessores();
-                loadProfessoresForSelect();
-            } else {
-                alert(`Erro: ${result.error}`);
-            }
-        } catch (error) {
-            console.error("Erro ao cadastrar professor:", error);
-            alert("Não foi possível conectar ao servidor.");
-        }
-    }
-
-    async function lancarNotas() {
-      const alunoId = document.getElementById("alunoParaNota").value;
-      const criterio = document.getElementById("criterioNota").value;
-
-      if (!alunoId || !criterio) {
-          alert("Por favor, selecione um aluno e um critério.");
-          return;
-      }
-
-      const dadosNotas = [];
-      const inputs = document.querySelectorAll("#notasPorCriterio input");
-
-      if (inputs.length === 0) {
-          alert("Nenhum campo de nota para lançar.");
-          return;
-      }
-
-      inputs.forEach(input => {
-          const nota = parseFloat(input.value);
-          if (!isNaN(nota)) {
-              dadosNotas.push({
-                  criterio: input.id,
-                  nota: nota
-              });
-          }
-      });
-
-      if (dadosNotas.length === 0) {
-          alert("Por favor, insira pelo menos uma nota válida.");
-          return;
-      }
-
-      try {
-          const response = await fetch("http://localhost:3000/api/notas", {
+          const response = await fetch(
+            "http://localhost:3000/api/professores",
+            {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                  alunoId,
-                  dadosNotas,
-                  professorId: usuarioLogado.id
-              }),
+              body: JSON.stringify({ nome, disciplina, senha }),
+            }
+          );
+
+          const result = await response.json();
+
+          if (response.ok) {
+            alert(result.message);
+            document.getElementById("nomeProfessor").value = "";
+            document.getElementById("disciplinaProfessor").value = "";
+            loadProfessores();
+            loadProfessoresForSelect();
+          } else {
+            alert(`Erro: ${result.error}`);
+          }
+        } catch (error) {
+          console.error("Erro ao cadastrar professor:", error);
+          alert("Não foi possível conectar ao servidor.");
+        }
+      }
+
+      async function lancarNotas() {
+        const alunoId = document.getElementById("alunoParaNota").value;
+        const criterio = document.getElementById("criterioNota").value;
+
+        if (!alunoId || !criterio) {
+          alert("Por favor, selecione um aluno e um critério.");
+          return;
+        }
+
+        const dadosNotas = [];
+        const inputs = document.querySelectorAll("#notasPorCriterio input");
+
+        if (inputs.length === 0) {
+          alert("Nenhum campo de nota para lançar.");
+          return;
+        }
+
+        inputs.forEach((input) => {
+          const nota = parseFloat(input.value);
+          if (!isNaN(nota)) {
+            dadosNotas.push({
+              criterio: input.id,
+              nota: nota,
+            });
+          }
+        });
+
+        if (dadosNotas.length === 0) {
+          alert("Por favor, insira pelo menos uma nota válida.");
+          return;
+        }
+
+        try {
+          const response = await fetch("http://localhost:3000/api/notas", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              alunoId,
+              dadosNotas,
+              professorId: usuarioLogado.id,
+            }),
           });
 
           const result = await response.json();
 
           if (response.ok) {
-              alert(result.message);
-              inputs.forEach(input => input.value = "");
+            alert(result.message);
+            inputs.forEach((input) => (input.value = ""));
           } else {
-              alert(`Erro: ${result.error}`);
+            alert(`Erro: ${result.error}`);
           }
-      } catch (error) {
+        } catch (error) {
           console.error("Erro ao lançar notas:", error);
           alert("Não foi possível conectar ao servidor para lançar as notas.");
+        }
       }
-    }
 
-    async function definirBanca() {
-      const alunoId = document.getElementById("alunoParaBanca").value;
-      const professor1Id = document.getElementById("professorBanca1").value;
-      const professor2Id = document.getElementById("professorBanca2").value;
-      const professor3Id = document.getElementById("professorBanca3").value; 
+      async function definirBanca() {
+        const alunoId = document.getElementById("alunoParaBanca").value;
+        const professor1Id = document.getElementById("professorBanca1").value;
+        const professor2Id = document.getElementById("professorBanca2").value;
+        const professor3Id = document.getElementById("professorBanca3").value;
 
-      if (!alunoId || !professor1Id || !professor2Id || !professor3Id) {
+        if (!alunoId || !professor1Id || !professor2Id || !professor3Id) {
           alert("Por favor, selecione o aluno e os três professores da banca.");
           return;
-      }
+        }
 
-      try {
+        try {
           const response = await fetch("http://localhost:3000/api/bancas", {
-              method: "POST",
-              headers: {
-                  "Content-Type": "application/json"
-              },
-              body: JSON.stringify({ alunoId, professor1Id, professor2Id, professor3Id })
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              alunoId,
+              professor1Id,
+              professor2Id,
+              professor3Id,
+            }),
           });
 
           const result = await response.json();
 
           if (response.ok) {
-              alert(result.message);
-              console.log(`Banca definida para o aluno ${alunoId} e salva no banco de dados.`);
+            alert(result.message);
+            console.log(
+              `Banca definida para o aluno ${alunoId} e salva no banco de dados.`
+            );
           } else {
-              alert(`Erro: ${result.error}`);
+            alert(`Erro: ${result.error}`);
           }
-
-      } catch (error) {
+        } catch (error) {
           console.error("Erro ao definir a banca:", error);
           alert("Não foi possível conectar ao servidor para definir a banca.");
+        }
       }
-    }
 
+      async function loadBanca() {
+        const bancaInfo = document.getElementById("banca-info");
+        bancaInfo.innerHTML = "";
 
-    async function loadBanca() {
-    const bancaInfo = document.getElementById('banca-info');
-    bancaInfo.innerHTML = '';
+        const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
 
-    const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
-    
-    if (!usuario) {
-        bancaInfo.innerHTML = '<p class="aviso-banca">Usuário não logado. Faça o login para ver a banca.</p>';
-        return;
-    }
+        if (!usuario) {
+          bancaInfo.innerHTML =
+            '<p class="aviso-banca">Usuário não logado. Faça o login para ver a banca.</p>';
+          return;
+        }
 
-    try {
-        const response = await fetch(`http://localhost:3000/api/bancas/${usuario.id}`);
-        const banca = await response.json();
+        try {
+          const response = await fetch(
+            `http://localhost:3000/api/bancas/${usuario.id}`
+          );
+          const banca = await response.json();
 
-        if (response.ok) {
+          if (response.ok) {
             const prof1Nome = getProfessorNameById(banca.professor1_id);
             const prof2Nome = getProfessorNameById(banca.professor2_id);
 
             const professoresBanca = [
-                { nome: prof1Nome, funcao: 'Professor(a) 1' },
-                { nome: prof2Nome, funcao: 'Professor(a) 2' },
+              { nome: prof1Nome, funcao: "Professor(a) 1" },
+              { nome: prof2Nome, funcao: "Professor(a) 2" },
             ];
 
-            professoresBanca.forEach(professor => {
-                const li = document.createElement('li');
-                li.innerHTML = `<strong>${professor.funcao}:</strong> ${professor.nome}`;
-                bancaInfo.appendChild(li);
+            professoresBanca.forEach((professor) => {
+              const li = document.createElement("li");
+              li.innerHTML = `<strong>${professor.funcao}:</strong> ${professor.nome}`;
+              bancaInfo.appendChild(li);
             });
-        } else {
-            const aviso = document.createElement('p');
+          } else {
+            const aviso = document.createElement("p");
             aviso.textContent = banca.error;
-            aviso.classList.add('aviso-banca');
+            aviso.classList.add("aviso-banca");
             bancaInfo.appendChild(aviso);
+          }
+        } catch (error) {
+          console.error("Erro ao carregar a banca:", error);
+          const aviso = document.createElement("p");
+          aviso.textContent =
+            "Erro ao carregar a banca. Tente novamente mais tarde.";
+          aviso.classList.add("aviso-banca");
+          bancaInfo.appendChild(aviso);
         }
-    } catch (error) {
-        console.error("Erro ao carregar a banca:", error);
-        const aviso = document.createElement('p');
-        aviso.textContent = 'Erro ao carregar a banca. Tente novamente mais tarde.';
-        aviso.classList.add('aviso-banca');
-        bancaInfo.appendChild(aviso);
-    }
-}
+      }
 
-    async function definirCronograma() {
-    const alunoId = document.getElementById("alunoCronograma").value;
-    const tipoEntrega = document.getElementById("tipoEntregaCronograma").value;
-    const dataEntrega = document.getElementById("dataEntregaCronograma").value;
-    const horaEntrega = document.getElementById("horaEntregaCronograma").value;
+      async function definirCronograma() {
+        const alunoId = document.getElementById("alunoCronograma").value;
+        const tipoEntrega = document.getElementById(
+          "tipoEntregaCronograma"
+        ).value;
+        const dataEntrega = document.getElementById(
+          "dataEntregaCronograma"
+        ).value;
+        const horaEntrega = document.getElementById(
+          "horaEntregaCronograma"
+        ).value;
 
-    if (!alunoId || !tipoEntrega || !dataEntrega || !horaEntrega) {
-        alert("Por favor, selecione o aluno e preencha todos os campos do cronograma.");
-        return;
-    }
+        if (!alunoId || !tipoEntrega || !dataEntrega || !horaEntrega) {
+          alert(
+            "Por favor, selecione o aluno e preencha todos os campos do cronograma."
+          );
+          return;
+        }
 
-    try {
-        const response = await fetch("http://localhost:3000/api/cronogramas", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ alunoId, tipoEntrega, dataEntrega, horaEntrega })
-        });
+        try {
+          const response = await fetch(
+            "http://localhost:3000/api/cronogramas",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                alunoId,
+                tipoEntrega,
+                dataEntrega,
+                horaEntrega,
+              }),
+            }
+          );
 
-        const result = await response.json();
+          const result = await response.json();
 
-        if (response.ok) {
+          if (response.ok) {
             alert(result.message || "Cronograma definido com sucesso!");
             loadCronogramas();
-        } else {
+          } else {
             alert(`Erro: ${result.error}`);
+          }
+        } catch (error) {
+          console.error("Erro ao definir cronograma:", error);
+          alert("Não foi possível conectar ao servidor.");
         }
-    } catch (error) {
-        console.error("Erro ao definir cronograma:", error);
-        alert("Não foi possível conectar ao servidor.");
-    }
-}
+      }
 
-async function loadCronogramas() {
-    const lista = document.getElementById("listaCronogramas");
-    lista.innerHTML = "<li>Carregando...</li>";
+      async function loadCronogramas() {
+        const lista = document.getElementById("listaCronogramas");
+        lista.innerHTML = "<li>Carregando...</li>";
 
-    try {
-        const response = await fetch("http://localhost:3000/api/cronogramas");
-        const cronogramas = await response.json();
+        try {
+          const response = await fetch("http://localhost:3000/api/cronogramas");
+          const cronogramas = await response.json();
 
-        lista.innerHTML = "";
-        if (cronogramas.length === 0) {
+          lista.innerHTML = "";
+          if (cronogramas.length === 0) {
             lista.innerHTML = "<li>Nenhum cronograma definido.</li>";
             return;
+          }
+
+          cronogramas.forEach((c) => {
+            const li = document.createElement("li");
+            const dataFormatada = new Date(c.dataEntrega).toLocaleDateString(
+              "pt-BR",
+              {
+                timeZone: "UTC",
+              }
+            );
+            const horaFormatada = c.horaEntrega.slice(0, 5);
+            li.textContent = `${c.aluno_nome} - ${c.tipoEntrega} até ${dataFormatada} às ${horaFormatada}`;
+            lista.appendChild(li);
+          });
+        } catch (error) {
+          console.error("Erro ao carregar cronogramas:", error);
+          lista.innerHTML = "<li>Erro ao carregar cronogramas.</li>";
+        }
+      }
+
+      async function loadAlunosCronograma() {
+        const select = document.getElementById("alunoCronograma");
+        select.innerHTML = "<option value=''>Carregando...</option>";
+
+        try {
+          const response = await fetch("http://localhost:3000/api/alunos");
+          const alunos = await response.json();
+
+          select.innerHTML = "<option value=''>Selecione um aluno</option>";
+
+          alunos.forEach((aluno) => {
+            const option = document.createElement("option");
+            option.value = aluno.id;
+            option.textContent = `${aluno.nome} (${
+              aluno.cidade || "sem cidade"
+            })`;
+            select.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Erro ao carregar alunos no cronograma:", error);
+          select.innerHTML =
+            "<option value=''>Erro ao carregar alunos</option>";
+        }
+      }
+
+      async function registrarReuniao() {
+        const alunoId = document.getElementById("alunoReuniao").value;
+        const professorId = usuarioLogado.id;
+        const data = document.getElementById("dataReuniao").value;
+        const descricao = document.getElementById("observacoesReuniao").value;
+        const documento = document.getElementById("documentoReuniao").files[0];
+
+        if (!alunoId || !data) {
+          alert("Aluno e data são obrigatórios.");
+          return;
         }
 
-        cronogramas.forEach(c => {
-            const li = document.createElement("li");
-            li.textContent = `${c.aluno_nome} - ${c.tipoEntrega} até ${c.dataEntrega} às ${c.horaEntrega}`;
-            lista.appendChild(li);
-        });
-    } catch (error) {
-        console.error("Erro ao carregar cronogramas:", error);
-        lista.innerHTML = "<li>Erro ao carregar cronogramas.</li>";
-    }
-}
+        const formData = new FormData();
+        formData.append("alunoId", alunoId);
+        formData.append("professorId", professorId);
+        formData.append("data", data);
+        formData.append("descricao", descricao);
+        if (documento) {
+          formData.append("documento", documento);
+        }
 
-async function loadAlunosCronograma() {
-  const select = document.getElementById("alunoCronograma");
-  select.innerHTML = "<option value=''>Carregando...</option>";
-
-  try {
-    const response = await fetch("http://localhost:3000/api/alunos");
-    const alunos = await response.json();
-
-    select.innerHTML = "<option value=''>Selecione um aluno</option>";
-
-    alunos.forEach(aluno => {
-      const option = document.createElement("option");
-      option.value = aluno.id;
-      option.textContent = `${aluno.nome} (${aluno.cidade || "sem cidade"})`;
-      select.appendChild(option);
-    });
-
-  } catch (error) {
-    console.error("Erro ao carregar alunos no cronograma:", error);
-    select.innerHTML = "<option value=''>Erro ao carregar alunos</option>";
-  }
-}
-
-    async function registrarReuniao() {
-    const alunoId = document.getElementById("alunoReuniao").value;
-    const professorId = usuarioLogado.id;
-    const data = document.getElementById("dataReuniao").value;
-    const descricao = document.getElementById("observacoesReuniao").value;
-    const documento = document.getElementById("documentoReuniao").files[0];
-
-    if (!alunoId || !data) {
-        alert("Aluno e data são obrigatórios.");
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append("alunoId", alunoId);
-    formData.append("professorId", professorId);
-    formData.append("data", data);
-    formData.append("descricao", descricao);
-    if (documento) {
-        formData.append("documento", documento);
-    }
-
-    try {
-        const response = await fetch("http://localhost:3000/api/reunioes", {
+        try {
+          const response = await fetch("http://localhost:3000/api/reunioes", {
             method: "POST",
             body: formData,
-        });
+          });
 
-        const result = await response.json();
-        if (response.ok) {
+          const result = await response.json();
+          if (response.ok) {
             alert(result.message);
             carregarReunioesProfessor();
-        } else {
+          } else {
             alert(`Erro: ${result.error}`);
+          }
+        } catch (error) {
+          console.error("Erro ao registrar reunião:", error);
+          alert("Não foi possível conectar ao servidor.");
         }
-    } catch (error) {
-        console.error("Erro ao registrar reunião:", error);
-        alert("Não foi possível conectar ao servidor.");
-    }
-}
+      }
 
+      async function carregarReunioesProfessor() {
+        const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
 
-    async function carregarReunioesProfessor() {
-  const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+        try {
+          const response = await fetch(
+            `http://localhost:3000/api/reunioes/professor/${usuario.id}`
+          );
+          const reunioes = await response.json();
 
-  try {
-    const response = await fetch(`http://localhost:3000/api/reunioes/professor/${usuario.id}`);
-    const reunioes = await response.json();
+          const lista = document.getElementById("listaReunioes");
+          lista.innerHTML = "";
 
-    const lista = document.getElementById("listaReunioes");
-    lista.innerHTML = "";
-
-    reunioes.forEach(r => {
-      const li = document.createElement("li");
-      let docLink = "Sem documento";
-if (r.documento) {
-  docLink = `<a href="http://localhost:3000/uploads/${encodeURIComponent(r.documento)}" 
+          reunioes.forEach((r) => {
+            const li = document.createElement("li");
+            let docLink = "Sem documento";
+            if (r.documento) {
+              docLink = `<a href="http://localhost:3000/uploads/${encodeURIComponent(
+                r.documento
+              )}" 
                 target="_blank" rel="noopener noreferrer">
                 Abrir Documento
              </a>`;
-}
-      li.innerHTML = `<strong>${r.data} ${r.hora}</strong> - ${r.aluno_nome} (${r.descricao || "Sem descrição"}) - ${docLink}`;
-      lista.appendChild(li);
-    });
-  } catch (error) {
-    console.error("Erro ao carregar reuniões:", error);
-  }
-}
+            }
+            const dataFormatada = new Date(r.data).toLocaleDateString("pt-BR", {
+              timeZone: "UTC",
+            });
+            li.innerHTML = `<strong>${dataFormatada} ${r.hora}</strong> - ${
+              r.aluno_nome
+            } (${r.descricao || "Sem descrição"}) - ${docLink}`;
+            lista.appendChild(li);
+          });
+        } catch (error) {
+          console.error("Erro ao carregar reuniões:", error);
+        }
+      }
 
-function renderReunioes(reunioes) {
-  const lista = document.getElementById("listaReunioes");
-  lista.innerHTML = "";
+      function renderReunioes(reunioes) {
+        const lista = document.getElementById("listaReunioes");
+        lista.innerHTML = "";
 
-  reunioes.forEach(r => {
-    const li = document.createElement("li");
-    li.innerHTML = `
+        reunioes.forEach((r) => {
+          const li = document.createElement("li");
+          li.innerHTML = `
       <strong>Aluno:</strong> ${r.aluno_nome} <br>
       <strong>Data:</strong> ${r.data} <br>
       <strong>Descrição:</strong> ${r.descricao} <br>
-      ${r.documento ? `<a href="${r.documento}" target="_blank">Abrir Documento</a>` : ''}
+      ${
+        r.documento
+          ? `<a href="${r.documento}" target="_blank">Abrir Documento</a>`
+          : ""
+      }
     `;
-    lista.appendChild(li);
-  });
-}
+          lista.appendChild(li);
+        });
+      }
 
-    function loadProfessorFeatures() {
+      function loadProfessorFeatures() {
         console.log("Carregando funcionalidades específicas do professor...");
         loadProfessoresForSelect();
         loadAlunosForSelect();
-    }
+      }
 
-    function loadDataForTabs() {
+      function loadDataForTabs() {
         loadAlunosMatriculados();
         loadProfessores();
         loadPrazosAlertas();
@@ -734,123 +805,145 @@ function renderReunioes(reunioes) {
         generateNotasPorCriterioInputs();
         loadCronogramas();
         loadAlunosCronograma();
-    }
+      }
 
-    async function loadAlunosMatriculados() {
-        const listaAlunosEl = document.getElementById("listaAlunosMatriculados");
+      async function loadAlunosMatriculados() {
+        const listaAlunosEl = document.getElementById(
+          "listaAlunosMatriculados"
+        );
         listaAlunosEl.innerHTML = "<li>Carregando...</li>";
         try {
-            const response = await fetch("http://localhost:3000/api/alunos");
-            const alunos = await response.json();
-            listaAlunosEl.innerHTML = "";
-            if (alunos.length === 0) {
-                listaAlunosEl.innerHTML = "<li>Nenhum aluno cadastrado.</li>";
-                return;
-            }
+          const response = await fetch("http://localhost:3000/api/alunos");
+          const alunos = await response.json();
+          listaAlunosEl.innerHTML = "";
+          if (alunos.length === 0) {
+            listaAlunosEl.innerHTML = "<li>Nenhum aluno cadastrado.</li>";
+            return;
+          }
+          alunos.forEach((aluno) => {
+            const li = document.createElement("li");
+            li.textContent = `${aluno.nome} (Matrícula: ${aluno.cpf})`;
+            listaAlunosEl.appendChild(li);
+          });
+        } catch (error) {
+          console.error("Erro ao buscar alunos:", error);
+          listaAlunosEl.innerHTML = "<li>Erro ao carregar alunos.</li>";
+        }
+      }
+
+      async function loadAlunosForSelect() {
+        const selects = document.querySelectorAll(
+          "#alunoSelecionado, #alunoParaBanca, #alunoParaNota, #alunoReuniao"
+        );
+        selects.forEach((select) => {
+          select.innerHTML = '<option value="">Selecione um aluno</option>';
+        });
+        try {
+          const response = await fetch("http://localhost:3000/api/alunos");
+          const alunos = await response.json();
+          selects.forEach((select) => {
             alunos.forEach((aluno) => {
-                const li = document.createElement("li");
-                li.textContent = `${aluno.nome} (Matrícula: ${aluno.cpf})`;
-                listaAlunosEl.appendChild(li);
+              const option = document.createElement("option");
+              option.value = aluno.id;
+              option.textContent = aluno.nome;
+              select.appendChild(option);
             });
+          });
         } catch (error) {
-            console.error("Erro ao buscar alunos:", error);
-            listaAlunosEl.innerHTML = "<li>Erro ao carregar alunos.</li>";
+          console.error("Erro ao carregar alunos para os selects:", error);
         }
-    }
+      }
 
-    async function loadAlunosForSelect() {
-        const selects = document.querySelectorAll("#alunoSelecionado, #alunoParaBanca, #alunoParaNota, #alunoReuniao");
+      async function loadProfessoresForSelect() {
+        const selects = document.querySelectorAll(
+          "#orientadorSelecionado, #professorBanca1, #professorBanca2, #professorBanca3"
+        );
         selects.forEach((select) => {
-            select.innerHTML = '<option value="">Selecione um aluno</option>';
+          select.innerHTML = '<option value="">Selecione um professor</option>';
         });
         try {
-            const response = await fetch("http://localhost:3000/api/alunos");
-            const alunos = await response.json();
-            selects.forEach((select) => {
-                alunos.forEach((aluno) => {
-                    const option = document.createElement("option");
-                    option.value = aluno.id;
-                    option.textContent = aluno.nome;
-                    select.appendChild(option);
-                });
+          const response = await fetch("http://localhost:3000/api/professores");
+          const professores = await response.json();
+          selects.forEach((select) => {
+            professores.forEach((professor) => {
+              const option = document.createElement("option");
+              option.value = professor.id;
+              option.textContent = professor.nome;
+              select.appendChild(option);
             });
+          });
         } catch (error) {
-            console.error("Erro ao carregar alunos para os selects:", error);
+          console.error("Erro ao carregar professores para os selects:", error);
         }
-    }
+      }
 
-    async function loadProfessoresForSelect() {
-        const selects = document.querySelectorAll("#orientadorSelecionado, #professorBanca1, #professorBanca2, #professorBanca3");
-        selects.forEach((select) => {
-            select.innerHTML = '<option value="">Selecione um professor</option>';
-        });
-        try {
-            const response = await fetch("http://localhost:3000/api/professores");
-            const professores = await response.json();
-            selects.forEach((select) => {
-                professores.forEach((professor) => {
-                    const option = document.createElement("option");
-                    option.value = professor.id;
-                    option.textContent = professor.nome;
-                    select.appendChild(option);
-                });
-            });
-        } catch (error) {
-            console.error("Erro ao carregar professores para os selects:", error);
-        }
-    }
-
-    async function loadProfessores() {
+      async function loadProfessores() {
         const listaProfessoresEl = document.getElementById("listaProfessores");
         listaProfessoresEl.innerHTML = "<li>Carregando...</li>";
         try {
-            const response = await fetch("http://localhost:3000/api/professores");
-            const professores = await response.json();
-            listaProfessoresEl.innerHTML = "";
-            if (professores.length === 0) {
-                listaProfessoresEl.innerHTML = "<li>Nenhum professor cadastrado.</li>";
-                return;
-            }
-            professores.forEach((prof) => {
-                const li = document.createElement("li");
-                li.textContent = `${prof.nome}`;
-                listaProfessoresEl.appendChild(li);
-            });
+          const response = await fetch("http://localhost:3000/api/professores");
+          const professores = await response.json();
+          listaProfessoresEl.innerHTML = "";
+          if (professores.length === 0) {
+            listaProfessoresEl.innerHTML =
+              "<li>Nenhum professor cadastrado.</li>";
+            return;
+          }
+          professores.forEach((prof) => {
+            const li = document.createElement("li");
+            li.textContent = `${prof.nome}`;
+            listaProfessoresEl.appendChild(li);
+          });
         } catch (error) {
-            console.error("Erro ao buscar professores:", error);
-            listaProfessoresEl.innerHTML = "<li>Erro ao carregar professores.</li>";
+          console.error("Erro ao buscar professores:", error);
+          listaProfessoresEl.innerHTML =
+            "<li>Erro ao carregar professores.</li>";
         }
-    }
-
-    function generateNotasPorCriterioInputs() {
-      const container = document.getElementById("notasPorCriterio");
-      const criterio = document.getElementById("criterioNota").value;
-
-      container.innerHTML = "";
-
-      let campos = [];
-      let prefixoCriterio = "";
-      switch (criterio) {
-          case "proposta":
-              campos = ["Qualidade da Proposta", "Originalidade", "Clareza"];
-              prefixoCriterio = "proposta_";
-              break;
-          case "reelaboracao_proposta":
-              campos = ["Atendimento às Correções", "Melhoria Geral", "Profundidade"];
-              prefixoCriterio = "reelaboracao_proposta_";
-              break;
-          case "tc":
-              campos = ["Conteúdo Técnico", "Estrutura do Trabalho", "Resultados"];
-              prefixoCriterio = "tc_";
-              break;
-          case "reelaboracao_tc":
-              campos = ["Correções Implementadas", "Qualidade da Apresentação", "Conclusões"];
-              prefixoCriterio = "reelaboracao_tc_";
-              break;
       }
 
-      campos.forEach((campo) => {
-          const idCampo = `${prefixoCriterio}${campo.toLowerCase().replace(/\s+/g, "_")}`;
+      function generateNotasPorCriterioInputs() {
+        const container = document.getElementById("notasPorCriterio");
+        const criterio = document.getElementById("criterioNota").value;
+
+        container.innerHTML = "";
+
+        let campos = [];
+        let prefixoCriterio = "";
+        switch (criterio) {
+          case "proposta":
+            campos = ["Qualidade da Proposta", "Originalidade", "Clareza"];
+            prefixoCriterio = "proposta_";
+            break;
+          case "reelaboracao_proposta":
+            campos = [
+              "Atendimento às Correções",
+              "Melhoria Geral",
+              "Profundidade",
+            ];
+            prefixoCriterio = "reelaboracao_proposta_";
+            break;
+          case "tc":
+            campos = [
+              "Conteúdo Técnico",
+              "Estrutura do Trabalho",
+              "Resultados",
+            ];
+            prefixoCriterio = "tc_";
+            break;
+          case "reelaboracao_tc":
+            campos = [
+              "Correções Implementadas",
+              "Qualidade da Apresentação",
+              "Conclusões",
+            ];
+            prefixoCriterio = "reelaboracao_tc_";
+            break;
+        }
+
+        campos.forEach((campo) => {
+          const idCampo = `${prefixoCriterio}${campo
+            .toLowerCase()
+            .replace(/\s+/g, "_")}`;
           const div = document.createElement("div");
           div.innerHTML = `
               <label for="${idCampo}">${campo}:</label>
@@ -864,64 +957,75 @@ function renderReunioes(reunioes) {
               />
               `;
           container.appendChild(div);
-      });
-  }
+        });
+      }
 
-    async function loadPrazosAlertas() {
-    console.log("Carregando prazos e alertas...");
+      async function loadPrazosAlertas() {
+        console.log("Carregando prazos e alertas...");
 
-    const listaPrazosEl = document.getElementById("listaPrazosEntrega");
-    listaPrazosEl.innerHTML = "";
-    const documentosEnviadosEl = document.getElementById("documentosEnviados"); 
-    documentosEnviadosEl.innerHTML = "";
+        const listaPrazosEl = document.getElementById("listaPrazosEntrega");
+        listaPrazosEl.innerHTML = "";
+        const documentosEnviadosEl =
+          document.getElementById("documentosEnviados");
+        documentosEnviadosEl.innerHTML = "";
 
-    try {
-        const responseCrono = await fetch("http://localhost:3000/api/cronogramas");
-        const cronogramas = await responseCrono.json();
+        try {
+          const responseCrono = await fetch(
+            "http://localhost:3000/api/cronogramas"
+          );
+          const cronogramas = await responseCrono.json();
 
-        if (cronogramas.length === 0) {
-            listaPrazosEl.innerHTML = "<li>Nenhum cronograma definido.</li>";
-        } else {
-            cronogramas.forEach(prazo => {
-                const li = document.createElement("li");
-                li.textContent = `${prazo.aluno_nome} - ${prazo.tipoEntrega} até ${prazo.dataEntrega} às ${prazo.horaEntrega}`;
-                listaPrazosEl.appendChild(li);
-            });
-        }
-    } catch (error) {
-        console.error("Erro ao carregar cronogramas:", error);
-        listaPrazosEl.innerHTML = "<li>Erro ao carregar cronogramas.</li>";
-    }
+          if (cronogramas.length === 0) {
+            listaPrazosEl.innerHTML = "<li>Nenhum cronograma definido.</li>";
+          } else {
+            cronogramas.forEach((prazo) => {
+              const li = document.createElement("li");
+              const dataFormatada = new Date(
+                prazo.dataEntrega
+              ).toLocaleDateString("pt-BR", {
+                timeZone: "UTC",
+              });
+              const horaFormatada = prazo.horaEntrega.slice(0, 5);
+              li.textContent = `${prazo.aluno_nome} - ${prazo.tipoEntrega} até ${dataFormatada} às ${horaFormatada}`;
+              listaPrazosEl.appendChild(li);
+            });
+          }
+        } catch (error) {
+          console.error("Erro ao carregar cronogramas:", error);
+          listaPrazosEl.innerHTML = "<li>Erro ao carregar cronogramas.</li>";
+        }
 
-    try {
-        const responseDocs = await fetch("http://localhost:3000/api/uploads"); 
-        const uploads = await responseDocs.json();
+        try {
+          const responseDocs = await fetch("http://localhost:3000/api/uploads");
+          const uploads = await responseDocs.json();
 
-        if (uploads.length === 0) {
-            documentosEnviadosEl.innerHTML = "<p>Nenhum documento enviado ainda.</p>";
-        } else {
+          if (uploads.length === 0) {
+            documentosEnviadosEl.innerHTML =
+              "<p>Nenhum documento enviado ainda.</p>";
+          } else {
             const ul = document.createElement("ul");
-            uploads.forEach(doc => {
-                const li = document.createElement("li");
-                li.classList.add("alert-item", "doc-info");
-                
-                li.innerHTML = `
+            uploads.forEach((doc) => {
+              const li = document.createElement("li");
+              li.classList.add("alert-item", "doc-info");
+              li.innerHTML = `
                     <strong>${doc.aluno_nome}</strong> enviou: 
-                    <a href="http://localhost:3000/uploads/${doc.documento}" target="_blank">${doc.descricao || doc.documento}</a>
+                    <a href="http://localhost:3000/uploads/${
+                doc.documento
+              }" target="_blank">${doc.descricao || doc.documento}</a>
                         
                     
                     <span>em ${new Date(doc.dataEnvio).toLocaleString()}</span>
                 `;
-                ul.appendChild(li);
-            });
+              ul.appendChild(li);
+            });
             documentosEnviadosEl.appendChild(ul);
-        }
-    } catch (error) {
-        console.error("Erro ao carregar uploads de alunos:", error);
-        documentosEnviadosEl.innerHTML = "<p>Erro ao carregar documentos enviados.</p>";
-    }
-}
-
+          }
+        } catch (error) {
+          console.error("Erro ao carregar uploads de alunos:", error);
+          documentosEnviadosEl.innerHTML =
+            "<p>Erro ao carregar documentos enviados.</p>";
+        }
+      }
     </script>
   </body>
 </html>
