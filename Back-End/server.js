@@ -8,6 +8,22 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/uploads', express.static('uploads'));
+
+const multer = require("multer");
+const path = require("path");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/"); // pasta onde os documentos serão salvos
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage: storage });
 
 app.post("/cadastro", async (req, res) => {
   const {
@@ -318,26 +334,42 @@ app.get("/api/notas/:alunoId", (req, res) => {
     });
 });
 
-app.post("/api/reunioes", (req, res) => {
-  const { alunoId, professorId, data, hora, descricao } = req.body;
+app.post("/api/reunioes", upload.single("documento"), (req, res) => {
+  const { alunoId, professorId, data, descricao } = req.body;
+  const documento = req.file ? req.file.filename : null;
 
-  if (!alunoId || !professorId || !data || !hora) {
-    return res.status(400).json({ error: "Preencha todos os campos obrigatórios." });
+  if (!alunoId || !professorId || !data) {
+    return res.status(400).json({ error: "Aluno, professor e data são obrigatórios." });
   }
 
-  const sql = `INSERT INTO reunioes (aluno_id, professor_id, data, hora, descricao)
-               VALUES (?, ?, ?, ?, ?)`;
-
-  db.query(sql, [alunoId, professorId, data, hora, descricao], (err) => {
+  const sql = `INSERT INTO reunioes (aluno_id, professor_id, data, descricao, documento) VALUES (?, ?, ?, ?, ?)`;
+  db.query(sql, [alunoId, professorId, data, descricao, documento], (err) => {
     if (err) {
-      console.error("Erro ao salvar reunião:", err);
-      return res.status(500).json({ error: "Erro ao salvar reunião no banco de dados." });
+      console.error("Erro ao registrar reunião:", err);
+      return res.status(500).json({ error: "Erro ao registrar reunião" });
     }
-    res.status(201).json({ message: "Reunião marcada com sucesso!" });
+    res.json({ message: "Reunião registrada com sucesso!" });
   });
 });
 
-// Listar reuniões de um aluno
+app.get("/api/reunioes/professor/:id", (req, res) => {
+  const professorId = req.params.id;
+  const sql = `
+    SELECT r.*, u.nome AS aluno_nome
+    FROM reunioes r
+    JOIN usuarios u ON r.aluno_id = u.id
+    WHERE r.professor_id = ?
+    ORDER BY r.data DESC
+  `;
+  db.query(sql, [professorId], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Erro ao buscar reuniões." });
+    }
+    res.json(results);
+  });
+});
+
 app.get("/api/reunioes/aluno/:alunoId", (req, res) => {
   const { alunoId } = req.params;
 
@@ -358,27 +390,93 @@ app.get("/api/reunioes/aluno/:alunoId", (req, res) => {
   });
 });
 
-// Listar reuniões de um professor
-app.get("/api/reunioes/professor/:professorId", (req, res) => {
-  const { professorId } = req.params;
+app.post("/api/cronogramas", (req, res) => {
+  const { alunoId, tipoEntrega, dataEntrega, horaEntrega } = req.body;
+
+  if (!alunoId || !tipoEntrega || !dataEntrega || !horaEntrega) {
+    return res.status(400).json({ error: "Preencha todos os campos do cronograma." });
+  }
 
   const sql = `
-    SELECT r.*, a.nome AS aluno_nome 
-    FROM reunioes r
-    JOIN usuarios a ON r.aluno_id = a.id
-    WHERE r.professor_id = ?
-    ORDER BY r.data ASC, r.hora ASC
+    INSERT INTO cronogramas (aluno_id, tipoEntrega, dataEntrega, horaEntrega)
+    VALUES (?, ?, ?, ?)
   `;
 
-  db.query(sql, [professorId], (err, results) => {
+  db.query(sql, [alunoId, tipoEntrega, dataEntrega, horaEntrega], (err) => {
     if (err) {
-      console.error("Erro ao buscar reuniões:", err);
-      return res.status(500).json({ error: "Erro ao buscar reuniões." });
+      console.error("Erro ao salvar cronograma:", err);
+      return res.status(500).json({ error: "Erro ao salvar cronograma no banco de dados." });
+    }
+    res.status(201).json({ message: "Cronograma definido com sucesso!" });
+  });
+});
+
+app.get("/api/cronogramas", (req, res) => {
+  const sql = `
+    SELECT c.id, u.nome AS aluno_nome, c.tipoEntrega, c.dataEntrega, c.horaEntrega, c.data_definicao
+    FROM cronogramas c
+    JOIN usuarios u ON c.aluno_id = u.id
+    ORDER BY c.dataEntrega ASC, c.horaEntrega ASC
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("Erro ao buscar cronogramas:", err);
+      return res.status(500).json({ error: "Erro ao buscar cronogramas no banco de dados." });
     }
     res.status(200).json(results);
   });
 });
 
+app.get("/api/cronogramas/:alunoId", (req, res) => {
+  const { alunoId } = req.params;
+
+  const sql = `
+    SELECT c.id, u.nome AS aluno_nome, c.tipoEntrega, c.dataEntrega, c.horaEntrega, c.data_definicao
+    FROM cronogramas c
+    JOIN usuarios u ON c.aluno_id = u.id
+    WHERE c.aluno_id = ?
+    ORDER BY c.dataEntrega ASC, c.horaEntrega ASC
+  `;
+
+  db.query(sql, [alunoId], (err, results) => {
+    if (err) {
+      console.error("Erro ao buscar cronogramas do aluno:", err);
+      return res.status(500).json({ error: "Erro ao buscar cronogramas do aluno." });
+    }
+    res.status(200).json(results);
+  });
+});
+
+app.post("/api/uploads", upload.single("documento"), (req, res) => {
+  const { usuarioId } = req.body;
+  const arquivo = req.file;
+
+  if (!usuarioId || !arquivo) {
+    return res.status(400).json({ error: "Usuário e arquivo são obrigatórios." });
+  }
+
+  const sql = "INSERT INTO uploads (usuario_id, nome_arquivo) VALUES (?, ?)";
+  db.query(sql, [usuarioId, arquivo.filename], (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Erro ao salvar upload no banco." });
+    }
+    res.json({ message: "Documento enviado com sucesso!" });
+  });
+});
+
+app.get("/api/uploads/:usuarioId", (req, res) => {
+  const { usuarioId } = req.params;
+  const sql = "SELECT * FROM uploads WHERE usuario_id = ?";
+  db.query(sql, [usuarioId], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Erro ao buscar uploads." });
+    }
+    res.json(results);
+  });
+});
 app.listen(3000, () => {
   console.log("Servidor rodando na porta 3000");
 });

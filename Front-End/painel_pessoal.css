@@ -74,6 +74,38 @@
         margin: 5px 0;
       }
 
+      .alert-item {
+        padding: 15px;
+        margin-bottom: 10px;
+        border-left-width: 5px;
+        border-left-style: solid;
+        border-radius: 5px;
+        background-color: #f8f9fa;
+        list-style-type: none;
+      }
+
+      .alert-item strong {
+          font-size: 1.1em;
+      }
+      
+      .alert-danger {
+          border-left-color: #dc3545;
+          color: #721c24;
+          background-color: #f8d7da;
+      }
+
+      .alert-warning {
+          border-left-color: #ffc107;
+          color: #856404;
+          background-color: #fff3cd;
+      }
+
+      .alert-info {
+          border-left-color: #17a2b8;
+          color: #0c5460;
+          background-color: #d1ecf1;
+      }
+
       .avaliacao-container {
           border: 1px solid #eee;
           padding: 15px;
