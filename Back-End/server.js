@@ -477,31 +477,35 @@ app.get("/api/uploads/:usuarioId", (req, res) => {
 
 
 app.get("/api/uploads/banca/:professorId", (req, res) => {
-  const { professorId } = req.params;
+  const { professorId } = req.params;
 
-  const sql = `
-    SELECT 
-      up.id, 
-      aluno.nome AS aluno_nome, 
-      up.descricao, 
-      up.documento, 
-      up.data_envio
-    FROM uploads up
-    JOIN usuarios aluno ON up.usuario_id = aluno.id  /* Alias 'aluno' para o nome */
-    JOIN bancas b ON b.aluno_id = up.usuario_id
-    WHERE b.professor1_id = ? OR b.professor2_id = ? OR b.professor3_id = ?
-    ORDER BY up.data_envio DESC
-  `;
+  // Nova consulta SQL usando sub-query para maior compatibilidade
+  const sql = `
+    SELECT 
+      up.id, 
+      u.nome AS aluno_nome, 
+      up.descricao, 
+      up.documento, 
+      up.data_envio
+    FROM uploads up
+    JOIN usuarios u ON up.usuario_id = u.id
+    WHERE up.usuario_id IN (
+      SELECT aluno_id 
+      FROM bancas
+      WHERE professor1_id = ? OR professor2_id = ? OR professor3_id = ?
+    )
+    ORDER BY up.data_envio DESC
+  `;
 
-  db.query(sql, [professorId, professorId, professorId], (err, results) => {
-    if (err) {
-      console.error("Erro ao buscar uploads da banca:", err);
-      return res
-        .status(500)
-        .json({ error: "Erro ao buscar uploads no banco de dados." });
-    }
-    res.json(results);
-  });
+  db.query(sql, [professorId, professorId, professorId], (err, results) => {
+    if (err) {
+      console.error("Erro ao buscar uploads da banca:", err);
+      return res
+        .status(500)
+        .json({ error: "Erro ao buscar uploads no banco de dados." });
+    }
+    res.json(results);
+  });
 });
 app.listen(3000, () => {
   console.log("Servidor rodando na porta 3000");

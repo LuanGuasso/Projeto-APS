@@ -975,75 +975,88 @@
         });
       }
 
-      async function loadPrazosAlertas() {
-    const alertasDiv = document.getElementById("alertas");
-    alertasDiv.innerHTML = "<p>Carregando alertas...</p>";
+    async function loadPrazosAlertas() {
+        // Seleciona os elementos corretos no HTML para prazos e alertas
+        const prazosList = document.getElementById("listaPrazosEntrega");
+        const alertasDiv = document.getElementById("alertas");
+        
+        // Define mensagens iniciais de carregamento
+        prazosList.innerHTML = "<li>Carregando prazos...</li>";
+        alertasDiv.innerHTML = "<p>Carregando documentos...</p>";
 
-    const usuario = JSON.parse(localStorage.getItem("usuarioLogado")); // professor logado
-    if (!usuario || !usuario.id) {
-        alertasDiv.innerHTML = '<p class="aviso-banca">Usuário não logado.</p>';
-        return;
-    }
-
-    let htmlContent = "<h3>Cronogramas</h3>";
-
-  try {
-    const response = await fetch(`http://localhost:3000/api/cronogramas`);
-    const cronogramas = await response.json();
-
-    if (cronogramas.length === 0) {
-      htmlContent += "<p>Nenhum cronograma definido.</p>";
-    } else {
-      htmlContent += "<ul>";
-      cronogramas.forEach((c) => {
-        const dataEntrega = new Date(c.dataEntrega).toLocaleDateString("pt-BR");
-        const horaEntrega = c.horaEntrega ? c.horaEntrega.substring(0, 5) : "";
-        htmlContent += `
-          <li>
-            <strong>${c.aluno_nome}</strong> - ${c.tipoEntrega}
-            até ${dataEntrega} ${horaEntrega}
-          </li>`;
-      });
-      htmlContent += "</ul>";
-    }
-  } catch (error) {
-    console.error("Erro ao carregar cronogramas:", error);
-    htmlContent += "<p>Erro ao carregar cronogramas.</p>";
-  }
-
-  // Agora busca os uploads da banca
-  htmlContent += "<h3>Documentos Enviados</h3>";
-
-    try {
-        // ESSA É A PARTE CHAVE, USANDO O NOVO ENDPOINT
-        const responseDocs = await fetch(
-            `http://localhost:3000/api/uploads/banca/${usuario.id}` // Aqui usa o ID do professor logado
-        );
-        const uploads = await responseDocs.json();
-
-        if (uploads.length === 0) {
-            htmlContent += "<p>Nenhum documento enviado pelos alunos ainda.</p>";
-        } else {
-            htmlContent += "<ul>";
-            uploads.forEach((doc) => {
-                htmlContent += `
-                    <li>
-                        // Exibe o nome do aluno, a descrição, e o link para o documento
-                        <strong>${doc.aluno_nome}</strong> enviou: 
-                        <a href="http://localhost:3000/uploads/${doc.documento}" target="_blank">
-                            ${doc.descricao}
-                        </a>
-                        <span> (${new Date(doc.data_envio).toLocaleString("pt-BR")})</span>
-                    </li>`;
-            });
-            htmlContent += "</ul>";
+        const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+        if (!usuario || !usuario.id) {
+            prazosList.innerHTML = "<li>Usuário não logado.</li>";
+            alertasDiv.innerHTML = '<p class="aviso-banca">Usuário não logado.</p>';
+            return;
         }
-    } catch (error) {
-        console.error("Erro ao carregar uploads da banca:", error);
-        htmlContent += "<p>Erro ao carregar documentos enviados.</p>";
-    }
 
-    alertasDiv.innerHTML = htmlContent;
+        // 1. Carrega os Prazos de Entrega (Cronogramas)
+        try {
+            const response = await fetch(`http://localhost:3000/api/cronogramas`);
+            const cronogramas = await response.json();
+
+            if (cronogramas.length === 0) {
+                prazosList.innerHTML = "<li>Nenhum prazo de entrega definido.</li>";
+            } else {
+                let prazosHtml = "";
+                cronogramas.forEach((c) => {
+                    const dataEntrega = new Date(c.dataEntrega).toLocaleDateString("pt-BR", { timeZone: 'UTC' });
+                    const horaEntrega = c.horaEntrega ? c.horaEntrega.substring(0, 5) : "";
+                    
+                    const nomesAmigaveis = {
+                        tc: "Trabalho de Conclusão",
+                        reelaboracao_proposta: "Reelaboração da Proposta",
+                        proposta: "Proposta Inicial",
+                        reelaboracao_tc: "Reelaboração do TC",
+                    };
+                    const nomeEntregaFormatado = nomesAmigaveis[c.tipoEntrega] || c.tipoEntrega;
+
+                    prazosHtml += `
+                        <li>
+                            <strong>${c.aluno_nome}</strong> - ${nomeEntregaFormatado}
+                            até ${dataEntrega} às ${horaEntrega}
+                        </li>`;
+                });
+                // Popula a lista de prazos
+                prazosList.innerHTML = prazosHtml;
+            }
+        } catch (error) {
+            console.error("Erro ao carregar cronogramas:", error);
+            prazosList.innerHTML = "<li>Erro ao carregar os prazos de entrega.</li>";
+        }
+
+        // 2. Carrega os Alertas (Documentos Enviados pelos alunos da banca)
+        try {
+            const responseDocs = await fetch(
+                `http://localhost:3000/api/uploads/banca/${usuario.id}`
+            );
+            const uploads = await responseDocs.json();
+
+            if (uploads.length === 0) {
+                alertasDiv.innerHTML = "<p>Nenhum documento enviado pelos alunos de sua banca.</p>";
+            } else {
+                let alertasHtml = "<ul>";
+                uploads.forEach((doc) => {
+                    alertasHtml += `
+                        <li class="doc-info">
+                            <div>
+                                <strong>${doc.aluno_nome}</strong> enviou: 
+                                <a href="http://localhost:3000/uploads/${doc.documento}" target="_blank">
+                                    ${doc.descricao}
+                                </a>
+                            </div>
+                            <span>${new Date(doc.data_envio).toLocaleString("pt-BR")}</span>
+                        </li>`;
+                });
+                alertasHtml += "</ul>";
+                // Popula a div de alertas/documentos
+                alertasDiv.innerHTML = alertasHtml;
+            }
+        } catch (error) {
+            console.error("Erro ao carregar uploads da banca:", error);
+            alertasDiv.innerHTML = "<p>Erro ao carregar os documentos enviados.</p>";
+        }
 }
     </script>
   </body>
