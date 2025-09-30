@@ -450,32 +450,58 @@ app.get("/api/cronogramas/:alunoId", (req, res) => {
 
 app.post("/api/uploads", upload.single("documento"), (req, res) => {
   const { usuarioId, descricao } = req.body;
-  const arquivo = req.file;
-
-  if (!usuarioId || !descricao || !arquivo) {
-    return res.status(400).json({ error: "Usuário, descrição e arquivo são obrigatórios." });
-  }
+  const documento = req.file.filename;
 
   const sql = "INSERT INTO uploads (usuario_id, descricao, documento) VALUES (?, ?, ?)";
-  db.query(sql, [usuarioId, descricao, arquivo.filename], (err) => {
+  db.query(sql, [usuarioId, descricao, documento], (err, result) => {
     if (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Erro ao salvar upload no banco." });
+      console.error("Erro ao salvar upload:", err);
+      return res.status(500).json({ error: "Erro ao salvar upload." });
     }
-    res.json({ message: "Documento enviado com sucesso!" });
+    res.status(201).json({ message: "Upload enviado com sucesso!", uploadId: result.insertId });
   });
 });
 
 app.get("/api/uploads/:usuarioId", (req, res) => {
   const { usuarioId } = req.params;
-  const sql = "SELECT * FROM uploads WHERE usuario_id = ?";
+
+  const sql = "SELECT * FROM uploads WHERE usuario_id = ? ORDER BY data_envio DESC";
   db.query(sql, [usuarioId], (err, results) => {
     if (err) {
-      console.error(err);
+      console.error("Erro ao buscar uploads:", err);
       return res.status(500).json({ error: "Erro ao buscar uploads." });
     }
-    res.json(results);
+    res.status(200).json(results);
   });
+});
+
+
+app.get("/api/uploads/banca/:professorId", (req, res) => {
+  const { professorId } = req.params;
+
+  const sql = `
+    SELECT 
+      up.id, 
+      aluno.nome AS aluno_nome, 
+      up.descricao, 
+      up.documento, 
+      up.data_envio
+    FROM uploads up
+    JOIN usuarios aluno ON up.usuario_id = aluno.id  /* Alias 'aluno' para o nome */
+    JOIN bancas b ON b.aluno_id = up.usuario_id
+    WHERE b.professor1_id = ? OR b.professor2_id = ? OR b.professor3_id = ?
+    ORDER BY up.data_envio DESC
+  `;
+
+  db.query(sql, [professorId, professorId, professorId], (err, results) => {
+    if (err) {
+      console.error("Erro ao buscar uploads da banca:", err);
+      return res
+        .status(500)
+        .json({ error: "Erro ao buscar uploads no banco de dados." });
+    }
+    res.json(results);
+  });
 });
 app.listen(3000, () => {
   console.log("Servidor rodando na porta 3000");

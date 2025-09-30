@@ -573,8 +573,11 @@ async function carregarUploads(alunoId) {
       }
 
       document.addEventListener("DOMContentLoaded", () => {
-        carregarUploads();
-      });
+  const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+  if (usuario) {
+    carregarUploads(usuario.id);
+  }
+});
     </script>
   </body>
 </html>

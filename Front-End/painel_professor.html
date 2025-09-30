@@ -197,7 +197,7 @@
                    
           <h3>Documentos Enviados pelos Alunos:</h3>
                    
-          <div id="documentosEnviados">
+          <div id="alertas">
                        
             <p>Carregando documentos...</p>
                      
@@ -976,83 +976,75 @@
       }
 
       async function loadPrazosAlertas() {
-        console.log("Carregando prazos e alertas...");
+    const alertasDiv = document.getElementById("alertas");
+    alertasDiv.innerHTML = "<p>Carregando alertas...</p>";
 
-        const listaPrazosEl = document.getElementById("listaPrazosEntrega");
-        listaPrazosEl.innerHTML = "";
-        const documentosEnviadosEl =
-          document.getElementById("documentosEnviados");
-        documentosEnviadosEl.innerHTML = "";
+    const usuario = JSON.parse(localStorage.getItem("usuarioLogado")); // professor logado
+    if (!usuario || !usuario.id) {
+        alertasDiv.innerHTML = '<p class="aviso-banca">Usuário não logado.</p>';
+        return;
+    }
 
-        try {
-          const responseCrono = await fetch(
-            "http://localhost:3000/api/cronogramas"
-          );
-          const cronogramas = await responseCrono.json();
+    let htmlContent = "<h3>Cronogramas</h3>";
 
-          if (cronogramas.length === 0) {
-            listaPrazosEl.innerHTML = "<li>Nenhum cronograma definido.</li>";
-          } else {
-            cronogramas.forEach((prazo) => {
-              const li = document.createElement("li");
-              // 1. Dicionário para "traduzir" os nomes
-              const nomesAmigaveis = {
-                tc: "Trabalho de Conclusão",
-                reelaboracao_proposta: "Reelaboração da Proposta",
-                proposta: "Proposta Inicial",
-                reelaboracao_tc: "Reelaboração do TC",
-                // Adicione outras traduções aqui se necessário
-              };
-              const dataFormatada = new Date(
-                prazo.dataEntrega
-              ).toLocaleDateString("pt-BR", {
-                timeZone: "UTC",
-              });
-              const horaFormatada = prazo.horaEntrega.slice(0, 5);
-              // 2. Busca o nome amigável no dicionário
-              const nomeEntregaFormatado =
-                nomesAmigaveis[prazo.tipoEntrega] || prazo.tipoEntrega;
-              // 3. Usa o nome formatado para exibir o texto
-              li.textContent = `${prazo.aluno_nome} - ${nomeEntregaFormatado} até ${dataFormatada} às ${horaFormatada}`;
-              listaPrazosEl.appendChild(li);
-            });
-          }
-        } catch (error) {
-          console.error("Erro ao carregar cronogramas:", error);
-          listaPrazosEl.innerHTML = "<li>Erro ao carregar cronogramas.</li>";
-        }
+  try {
+    const response = await fetch(`http://localhost:3000/api/cronogramas`);
+    const cronogramas = await response.json();
 
-        try {
-          const responseDocs = await fetch("http://localhost:3000/api/uploads");
-          const uploads = await responseDocs.json();
+    if (cronogramas.length === 0) {
+      htmlContent += "<p>Nenhum cronograma definido.</p>";
+    } else {
+      htmlContent += "<ul>";
+      cronogramas.forEach((c) => {
+        const dataEntrega = new Date(c.dataEntrega).toLocaleDateString("pt-BR");
+        const horaEntrega = c.horaEntrega ? c.horaEntrega.substring(0, 5) : "";
+        htmlContent += `
+          <li>
+            <strong>${c.aluno_nome}</strong> - ${c.tipoEntrega}
+            até ${dataEntrega} ${horaEntrega}
+          </li>`;
+      });
+      htmlContent += "</ul>";
+    }
+  } catch (error) {
+    console.error("Erro ao carregar cronogramas:", error);
+    htmlContent += "<p>Erro ao carregar cronogramas.</p>";
+  }
 
-          if (uploads.length === 0) {
-            documentosEnviadosEl.innerHTML =
-              "<p>Nenhum documento enviado ainda.</p>";
-          } else {
-            const ul = document.createElement("ul");
+  // Agora busca os uploads da banca
+  htmlContent += "<h3>Documentos Enviados</h3>";
+
+    try {
+        // ESSA É A PARTE CHAVE, USANDO O NOVO ENDPOINT
+        const responseDocs = await fetch(
+            `http://localhost:3000/api/uploads/banca/${usuario.id}` // Aqui usa o ID do professor logado
+        );
+        const uploads = await responseDocs.json();
+
+        if (uploads.length === 0) {
+            htmlContent += "<p>Nenhum documento enviado pelos alunos ainda.</p>";
+        } else {
+            htmlContent += "<ul>";
             uploads.forEach((doc) => {
-              const li = document.createElement("li");
-              li.classList.add("alert-item", "doc-info");
-              li.innerHTML = `
-                    <strong>${doc.aluno_nome}</strong> enviou: 
-                    <a href="http://localhost:3000/uploads/${
-                doc.documento
-              }" target="_blank">${doc.descricao || doc.documento}</a>
-                        
-                    
-                    <span>em ${new Date(doc.dataEnvio).toLocaleString()}</span>
-                `;
-              ul.appendChild(li);
+                htmlContent += `
+                    <li>
+                        // Exibe o nome do aluno, a descrição, e o link para o documento
+                        <strong>${doc.aluno_nome}</strong> enviou: 
+                        <a href="http://localhost:3000/uploads/${doc.documento}" target="_blank">
+                            ${doc.descricao}
+                        </a>
+                        <span> (${new Date(doc.data_envio).toLocaleString("pt-BR")})</span>
+                    </li>`;
             });
-            documentosEnviadosEl.appendChild(ul);
-          }
-        } catch (error) {
-          console.error("Erro ao carregar uploads de alunos:", error);
-          documentosEnviadosEl.innerHTML =
-            "<p>Erro ao carregar documentos enviados.</p>";
+            htmlContent += "</ul>";
         }
-      }
+    } catch (error) {
+        console.error("Erro ao carregar uploads da banca:", error);
+        htmlContent += "<p>Erro ao carregar documentos enviados.</p>";
+    }
+
+    alertasDiv.innerHTML = htmlContent;
+}
     </script>
   </body>
 </html>
