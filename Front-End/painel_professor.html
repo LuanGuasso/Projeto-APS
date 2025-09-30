@@ -652,6 +652,15 @@
             return;
           }
 
+          // 1. Dicionário para "traduzir" os nomes
+          const nomesAmigaveis = {
+            tc: "Trabalho de Conclusão",
+            reelaboracao_proposta: "Reelaboração da Proposta",
+            proposta: "Proposta Inicial",
+            reelaboracao_tc: "Reelaboração do TC",
+            // Adicione outras traduções aqui se necessário
+          };
+
           cronogramas.forEach((c) => {
             const li = document.createElement("li");
             const dataFormatada = new Date(c.dataEntrega).toLocaleDateString(
@@ -661,7 +670,13 @@
               }
             );
             const horaFormatada = c.horaEntrega.slice(0, 5);
-            li.textContent = `${c.aluno_nome} - ${c.tipoEntrega} até ${dataFormatada} às ${horaFormatada}`;
+
+            // 2. Busca o nome amigável no dicionário
+            const nomeEntregaFormatado =
+              nomesAmigaveis[c.tipoEntrega] || c.tipoEntrega;
+
+            // 3. Usa o nome formatado para exibir o texto
+            li.textContent = `${c.aluno_nome} - ${nomeEntregaFormatado} até ${dataFormatada} às ${horaFormatada}`;
             lista.appendChild(li);
           });
         } catch (error) {
@@ -761,7 +776,7 @@
             const dataFormatada = new Date(r.data).toLocaleDateString("pt-BR", {
               timeZone: "UTC",
             });
-            li.innerHTML = `<strong>${dataFormatada} ${r.hora}</strong> - ${
+            li.innerHTML = `<strong>${dataFormatada}</strong> - ${
               r.aluno_nome
             } (${r.descricao || "Sem descrição"}) - ${docLink}`;
             lista.appendChild(li);
@@ -980,13 +995,25 @@
           } else {
             cronogramas.forEach((prazo) => {
               const li = document.createElement("li");
+              // 1. Dicionário para "traduzir" os nomes
+              const nomesAmigaveis = {
+                tc: "Trabalho de Conclusão",
+                reelaboracao_proposta: "Reelaboração da Proposta",
+                proposta: "Proposta Inicial",
+                reelaboracao_tc: "Reelaboração do TC",
+                // Adicione outras traduções aqui se necessário
+              };
               const dataFormatada = new Date(
                 prazo.dataEntrega
               ).toLocaleDateString("pt-BR", {
                 timeZone: "UTC",
               });
               const horaFormatada = prazo.horaEntrega.slice(0, 5);
-              li.textContent = `${prazo.aluno_nome} - ${prazo.tipoEntrega} até ${dataFormatada} às ${horaFormatada}`;
+              // 2. Busca o nome amigável no dicionário
+              const nomeEntregaFormatado =
+                nomesAmigaveis[prazo.tipoEntrega] || prazo.tipoEntrega;
+              // 3. Usa o nome formatado para exibir o texto
+              li.textContent = `${prazo.aluno_nome} - ${nomeEntregaFormatado} até ${dataFormatada} às ${horaFormatada}`;
               listaPrazosEl.appendChild(li);
             });
           }

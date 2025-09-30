@@ -400,9 +400,7 @@
             // 3. Combina as informações e o link dentro do mesmo <li>
             li.innerHTML = `
         <div class="reuniao-info">
-            <strong>${dataFormatada} ${r.hora || ""}</strong> - Professor: ${
-              r.professor_nome
-            } 
+            <strong>${dataFormatada} </strong> - Professor: ${r.professor_nome} 
             <span class="observacao">(${r.descricao || "Sem descrição"})</span>
         </div>
         ${docLink}
@@ -445,23 +443,47 @@
             return;
           }
 
+          // --- INÍCIO DA MODIFICAÇÃO ---
+
+          // 1. Crie um dicionário para mapear os nomes "de código" para nomes legíveis
+          const nomesAmigaveis = {
+            tc: "Trabalho de Conclusão",
+            reelaboracao_proposta: "Reelaboração da Proposta",
+            proposta: "Proposta Inicial",
+            reelaboracao_tc: "Reelaboração do TC",
+          };
+
           let htmlContent = "<ul>";
           cronogramas.forEach((c) => {
-            const dataEntrega = new Date(c.dataEntrega).toLocaleDateString();
-            const horaEntrega = c.horaEntrega ? c.horaEntrega : "";
+            const dataEntrega = new Date(c.dataEntrega).toLocaleDateString(
+              "pt-BR",
+              { timeZone: "UTC" }
+            );
+
+            // Formata a hora para HH:MM
+            const horaEntrega = c.horaEntrega
+              ? c.horaEntrega.substring(0, 5)
+              : "";
+
+            // 2. Use o dicionário para obter o nome formatado.
+            // Se não encontrar uma tradução, ele usa o valor original (c.tipoEntrega).
+            const nomeEntregaFormatado =
+              nomesAmigaveis[c.tipoEntrega] || c.tipoEntrega;
 
             htmlContent += `
-                <li class="alert-item alert-info">
-                    <strong>${
-                      c.tipoEntrega
-                    }</strong> - Entrega: ${dataEntrega} ${horaEntrega} 
-                    (Definido em: ${new Date(
-                      c.data_definicao
-                    ).toLocaleDateString()})
-                </li>
-            `;
+        <li class="alert-item alert-info">
+            <strong>${
+              nomeEntregaFormatado // 3. Use a variável com o nome formatado aqui
+            }</strong> - Entrega: ${dataEntrega} ${horaEntrega} 
+            (Definido em: ${new Date(c.data_definicao).toLocaleDateString(
+              "pt-BR"
+            )})
+        </li>
+      `;
           });
           htmlContent += "</ul>";
+
+          // --- FIM DA MODIFICAÇÃO ---
 
           alertasDiv.innerHTML = htmlContent;
         } catch (error) {
