@@ -449,15 +449,15 @@ app.get("/api/cronogramas/:alunoId", (req, res) => {
 });
 
 app.post("/api/uploads", upload.single("documento"), (req, res) => {
-  const { usuarioId } = req.body;
+  const { usuarioId, descricao } = req.body;
   const arquivo = req.file;
 
-  if (!usuarioId || !arquivo) {
-    return res.status(400).json({ error: "Usuário e arquivo são obrigatórios." });
+  if (!usuarioId || !descricao || !arquivo) {
+    return res.status(400).json({ error: "Usuário, descrição e arquivo são obrigatórios." });
   }
 
-  const sql = "INSERT INTO uploads (usuario_id, nome_arquivo) VALUES (?, ?)";
-  db.query(sql, [usuarioId, arquivo.filename], (err) => {
+  const sql = "INSERT INTO uploads (usuario_id, descricao, documento) VALUES (?, ?, ?)";
+  db.query(sql, [usuarioId, descricao, arquivo.filename], (err) => {
     if (err) {
       console.error(err);
       return res.status(500).json({ error: "Erro ao salvar upload no banco." });

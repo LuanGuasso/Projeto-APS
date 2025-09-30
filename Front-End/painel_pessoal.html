@@ -503,10 +503,10 @@
           return;
         }
 
-        const formData = new FormData();
-        formData.append("alunoId", usuario.id);
-        formData.append("descricao", descricao);
-        formData.append("documento", arquivo);
+  const formData = new FormData();
+  formData.append("usuarioId", usuario.id);
+  formData.append("descricao", descricao);
+  formData.append("documento", arquivo);
 
         try {
           const response = await fetch("http://localhost:3000/api/uploads", {
@@ -514,32 +514,35 @@
             body: formData,
           });
 
-          const result = await response.json();
-          if (response.ok) {
-            alert(result.message || "Documento enviado com sucesso!");
-            document.getElementById("documentoUpload").value = "";
-            document.getElementById("descricaoUpload").value = "";
-            carregarUploads(usuario.id);
-          } else {
-            alert(`Erro ao enviar: ${result.error}`);
-          }
-        } catch (error) {
-          console.error("Erro ao enviar documento:", error);
-          alert("Não foi possível conectar ao servidor.");
-        }
-      }
+    const result = await response.json();
+    if (response.ok) {
+      alert(result.message || "Documento enviado com sucesso!");
+      document.getElementById("documentoUpload").value = '';
+      document.getElementById("descricaoUpload").value = '';
+      
+      carregarUploads(usuario.id); 
+    } else {
+      alert(`Erro ao enviar: ${result.error}`);
+    }
+  } catch (error) {
+    console.error("Erro ao enviar documento:", error);
+    alert("Não foi possível conectar ao servidor.");
+  }
+}
 
-      async function carregarUploads(alunoId) {
-        const lista = document.getElementById("listaUploads");
-        lista.innerHTML = "<li>Carregando documentos...</li>";
 
-        const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
-        const idParaBuscar = alunoId || (usuario ? usuario.id : null);
 
-        if (!idParaBuscar) {
-          lista.innerHTML = "<li>Erro: ID do aluno não encontrado.</li>";
-          return;
-        }
+async function carregarUploads(alunoId) {
+  const lista = document.getElementById("listaUploads");
+  lista.innerHTML = "<li>Carregando documentos...</li>";
+  
+  const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+  const idParaBuscar = usuario.id || (usuario ? usuario.id : null);
+  
+  if (!idParaBuscar) {
+    lista.innerHTML = "<li>Erro: ID do aluno não encontrado.</li>";
+    return;
+  }
 
         try {
           const response = await fetch(
@@ -554,15 +557,11 @@
             return;
           }
 
-          uploads.forEach((u) => {
-            const li = document.createElement("li");
-            li.innerHTML = `
-        <strong>${u.descricao}</strong> (Data: ${new Date(
-              u.data_upload
-            ).toLocaleDateString()}) - 
-        <a href="http://localhost:3000/uploads/${
-          u.documento
-        }" target="_blank">Abrir Arquivo</a>
+    uploads.forEach(u => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <strong>${u.descricao}</strong> (Data: ${new Date(u.data_envio).toLocaleDateString()}) - 
+        <a href="http://localhost:3000/uploads/${u.documento}" target="_blank">Abrir Arquivo</a>
       `;
             lista.appendChild(li);
           });
